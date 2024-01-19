@@ -59,13 +59,15 @@ model User {
 }
 
 model Listing {
-    id          String @id @default(cuid())
+    id          String   @id @default(cuid())
     title       String
     description String
     price       Float
     image       String
     userId      String
-    user        User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+    status      String   @default("active")
+    expires     DateTime
+    user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
     bids        Bid[]
 }
 
