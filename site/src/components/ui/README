@@ -1,0 +1,6 @@
+# `@/components/ui` README
+
+The components contained in `@/components/ui` are loaded with `shadcn/ui`
+
+View the list of additional components at <https://ui.shadcn.com/docs/components/>
+Use `npx shadcn-ui@latest add <component-name>` to add a component to this directory.
