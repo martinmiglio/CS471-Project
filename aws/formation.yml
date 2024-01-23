@@ -135,7 +135,6 @@ Resources:
           Value: "true"
       ManagedPolicyArns:
         - !Ref S3AccessPolicy
-        - !Ref DBPolicy
 
   S3AccessPolicy:
     Type: "AWS::IAM::ManagedPolicy"
