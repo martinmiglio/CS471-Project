@@ -1,0 +1,85 @@
+@startuml AuctionWesite
+
+!definelong Entity(e_alias, e_label, e_techn, e_color, e_stereo)
+rectangle "==e_label\n//<size:TECHN_FONT_SIZE>[e_techn]</size>//" <<e_stereo>> as e_alias
+!enddefinelong
+
+!definelong GroupEntity(g_alias, g_label, g_color, g_stereo)
+rectangle "$colorlabel(g_label, g_color)" as g_alias <<g_stereo>>
+!enddefinelong
+
+' databse group entity and a table entity
+!define DatabaseGroup(g_alias, g_label) GroupEntity(g_alias, g_label, #FF7700, Database)
+!define DatabaseTable(e_alias, e_techn) Entity(e_alias, "Table", e_techn, #FF7700, DatabaseTable)
+
+
+!define ServerlessAPIRoute(e_alias, e_techn) Entity(e_alias, "API Route", e_techn, #7AA116, ServerlessAPIRoute)
+
+!define Page(e_alias, e_techn) Entity(e_alias, "Page", e_techn, #7AA116, Page)
+
+' import aws resource components
+!define AWSPuml https://raw.githubusercontent.com/awslabs/aws-icons-for-plantuml/v17.0/dist
+!include AWSPuml/AWSCommon.puml
+!include AWSPuml/Groups/AWSCloud.puml
+!include AWSPuml/Groups/AvailabilityZone.puml
+!include AWSPuml/NetworkingContentDelivery/CloudFrontDownloadDistribution.puml
+!include AWSPuml/Storage/SimpleStorageService.puml
+
+
+
+
+
+hide stereotype
+skinparam linetype ortho
+
+GroupEntity(vercel, "Vercel", #000000, Vercel) {
+    GroupEntity(nextjs, "Next.js", #000000, NextJS) {
+        ServerlessAPIRoute(s3uploadRoute, "api/s3-upload")
+        ServerlessAPIRoute(listingsRoute, "api/listings")
+        ServerlessAPIRoute(bidsRoute, "api/bids")
+        ServerlessAPIRoute(authRoute, "api/next-auth")
+        Page(homePage, "/")
+        Page(listingPage, "/listings/[id]")
+        Page(bidsPage, "/bids")
+        Page(loginPage, "/login")
+
+        homePage .u.> listingsRoute
+        homePage .u.> bidsRoute
+        listingPage .u.> listingsRoute
+        bidsPage .u.> bidsRoute
+        loginPage .u.> authRoute
+    }
+}
+
+GroupEntity(turso, "Turso", #000000, Turso) {
+    DatabaseGroup(database, "Database") {
+        DatabaseTable(listingsDB, "Listings")
+        DatabaseTable(bidsDB, "Bids")
+        DatabaseTable(usersDB, "Users")
+    }
+}
+
+AWSCloudGroup(cloud) {
+    CloudFrontDownloadDistribution(cloudfront, "CloudFront", "CDN")
+
+    AvailabilityZoneGroup(az_1, "us-east-1") {
+        SimpleStorageService(az_1_s3, "S3 bucket", "Image Storage")
+    }
+
+    az_1_s3 .l.> cloudfront
+}
+
+
+
+cloudfront -> listingPage
+cloudfront -> bidsPage
+cloudfront -> homePage
+
+s3uploadRoute .> az_1_s3
+listingsRoute .> listingsDB
+bidsRoute .> bidsDB
+authRoute .> usersDB
+
+
+
+@enduml
