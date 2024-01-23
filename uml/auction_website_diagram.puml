@@ -26,9 +26,6 @@ rectangle "$colorlabel(g_label, g_color)" as g_alias <<g_stereo>>
 !include AWSPuml/Storage/SimpleStorageService.puml
 
 
-
-
-
 hide stereotype
 skinparam linetype ortho
 
