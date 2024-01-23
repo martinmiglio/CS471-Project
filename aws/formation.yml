@@ -1,0 +1,174 @@
+AWSTemplateFormatVersion: "2010-09-09"
+
+Description: "Auction Site Stack"
+
+Parameters:
+  ResourcePrefix:
+    Description: prefix for all resources, can include lowercase letters (a-z), numbers (0-9), and dashes (-). must be unique within an aws region
+    Type: String
+  CDNDomain:
+    Description: domain name for the cdn
+    Type: String
+
+Resources:
+  S3Bucket:
+    Type: "AWS::S3::Bucket"
+    Properties:
+      BucketName: !Sub "${ResourcePrefix}-bucket"
+      Tags:
+        - Key: !Ref ResourcePrefix
+          Value: ""
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: "AES256"
+            BucketKeyEnabled: true
+      CorsConfiguration:
+        CorsRules:
+          - AllowedHeaders:
+              - "*"
+            AllowedMethods:
+              - "PUT"
+              - "POST"
+            AllowedOrigins:
+              - "*"
+            ExposedHeaders:
+              - "ETag"
+      OwnershipControls:
+        Rules:
+          - ObjectOwnership: "BucketOwnerEnforced"
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+
+  S3BucketPolicy:
+    Type: "AWS::S3::BucketPolicy"
+    Properties:
+      Bucket: !Ref S3Bucket
+      PolicyDocument:
+        Version: "2008-10-17"
+        Id: "PolicyForCloudFrontPrivateContent"
+        Statement:
+          - Sid: "AllowCloudFrontServicePrincipal"
+            Effect: "Allow"
+            Principal:
+              Service: "cloudfront.amazonaws.com"
+            Action: "s3:GetObject"
+            Resource: !Sub
+              - "${bucketARN}/*"
+              - { bucketARN: !GetAtt S3Bucket.Arn }
+            Condition:
+              StringEquals:
+                "AWS:SourceArn": !Sub "arn:aws:cloudfront::${AWS::AccountId}:distribution/${CloudFrontDistribution}"
+
+  CloudFrontDistribution:
+    Type: "AWS::CloudFront::Distribution"
+    Properties:
+      DistributionConfig:
+        Origins:
+          - ConnectionAttempts: 3
+            ConnectionTimeout: 10
+            DomainName: !GetAtt S3Bucket.RegionalDomainName
+            Id: !GetAtt S3Bucket.RegionalDomainName
+            S3OriginConfig:
+              OriginAccessIdentity: ""
+            OriginAccessControlId: !GetAtt CloudFrontOriginAccessControl.Id
+        DefaultCacheBehavior:
+          AllowedMethods:
+            - "HEAD"
+            - "GET"
+          CachedMethods:
+            - "HEAD"
+            - "GET"
+          Compress: true
+          SmoothStreaming: false
+          TargetOriginId: !GetAtt S3Bucket.RegionalDomainName
+          ViewerProtocolPolicy: "redirect-to-https"
+          ForwardedValues:
+            QueryString: false
+            Cookies:
+              Forward: none
+        Comment: !Sub "${ResourcePrefix} cdn"
+        PriceClass: "PriceClass_100"
+        Enabled: true
+        Restrictions:
+          GeoRestriction:
+            RestrictionType: "none"
+        HttpVersion: "http2"
+        Aliases:
+          - !Sub "${CDNDomain}"
+        ViewerCertificate:
+          AcmCertificateArn: !Ref CertificateManagerCertificate
+          MinimumProtocolVersion: TLSv1.2_2021
+          SslSupportMethod: sni-only
+        IPV6Enabled: true
+
+  CloudFrontOriginAccessControl:
+    Type: "AWS::CloudFront::OriginAccessControl"
+    Properties:
+      OriginAccessControlConfig:
+        Name: !Sub "${ResourcePrefix}-origin-access-control"
+        OriginAccessControlOriginType: "s3"
+        SigningBehavior: "always"
+        SigningProtocol: "sigv4"
+
+  CertificateManagerCertificate:
+    Type: "AWS::CertificateManager::Certificate"
+    Properties:
+      DomainName: !Sub "${CDNDomain}"
+      SubjectAlternativeNames:
+        - !Sub "${CDNDomain}"
+      DomainValidationOptions:
+        - DomainName: !Sub "${CDNDomain}"
+          ValidationDomain: !Sub "${CDNDomain}"
+      CertificateTransparencyLoggingPreference: "ENABLED"
+
+  IAMUser:
+    Type: "AWS::IAM::User"
+    Properties:
+      Path: "/"
+      UserName: !Sub "${ResourcePrefix}-user"
+      Tags:
+        - Key: !Ref ResourcePrefix
+          Value: "true"
+      ManagedPolicyArns:
+        - !Ref S3AccessPolicy
+        - !Ref DBPolicy
+
+  S3AccessPolicy:
+    Type: "AWS::IAM::ManagedPolicy"
+    Properties:
+      ManagedPolicyName: !Sub "${ResourcePrefix}-s3-access"
+      Path: "/"
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Sid: "S3UploadAssets"
+            Effect: "Allow"
+            Action:
+              - "s3:*"
+            Resource:
+              - !Sub "arn:aws:s3:::${S3Bucket}"
+              - !Sub "arn:aws:s3:::${S3Bucket}/images/**/*.jpg"
+              - !Sub "arn:aws:s3:::${S3Bucket}/images/**/*.jpeg"
+              - !Sub "arn:aws:s3:::${S3Bucket}/images/**/*.png"
+          - Sid: "STSToken"
+            Effect: "Allow"
+            Action: "sts:GetFederationToken"
+            Resource:
+              - !Sub "arn:aws:sts::${AWS::AccountId}:federated-user/S3UploadWebToken"
+
+  AccessKey:
+    Type: AWS::IAM::AccessKey
+    Properties:
+      Status: Active
+      UserName: !Ref IAMUser
+
+  AccessKeySecret:
+    Type: AWS::SecretsManager::Secret
+    Properties:
+      Name: !Sub /${AWS::StackName}/credentials/${IAMUser}
+      SecretString: !Sub '{"AccessKeyId":"${AccessKey}","SecretAccessKey":"${AccessKey.SecretAccessKey}"}'
+
