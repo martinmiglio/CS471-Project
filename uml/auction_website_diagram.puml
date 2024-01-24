@@ -1,23 +1,23 @@
 @startuml AuctionWesite
+' left to right direction
+hide stereotype
+skinparam linetype ortho
+allowmixing
 
 !definelong Entity(e_alias, e_label, e_techn, e_color, e_stereo)
-rectangle "==e_label\n//<size:TECHN_FONT_SIZE>[e_techn]</size>//" <<e_stereo>> as e_alias
+rectangle "==$colorlabel(e_label, e_color)\n//[e_techn]//\n" <<e_stereo>> as e_alias
 !enddefinelong
 
 !definelong GroupEntity(g_alias, g_label, g_color, g_stereo)
 rectangle "$colorlabel(g_label, g_color)" as g_alias <<g_stereo>>
 !enddefinelong
 
-' databse group entity and a table entity
-!define DatabaseGroup(g_alias, g_label) GroupEntity(g_alias, g_label, #FF7700, Database)
 !define DatabaseTable(e_alias, e_techn) Entity(e_alias, "Table", e_techn, #FF7700, DatabaseTable)
 
 
-!define ServerlessAPIRoute(e_alias, e_techn) Entity(e_alias, "API Route", e_techn, #7AA116, ServerlessAPIRoute)
-
 !define Page(e_alias, e_techn) Entity(e_alias, "Page", e_techn, #7AA116, Page)
 
-' import aws resource components
+
 !define AWSPuml https://raw.githubusercontent.com/awslabs/aws-icons-for-plantuml/v17.0/dist
 !include AWSPuml/AWSCommon.puml
 !include AWSPuml/Groups/AWSCloud.puml
@@ -26,34 +26,12 @@ rectangle "$colorlabel(g_label, g_color)" as g_alias <<g_stereo>>
 !include AWSPuml/Storage/SimpleStorageService.puml
 
 
-hide stereotype
-skinparam linetype ortho
-
-GroupEntity(vercel, "Vercel", #000000, Vercel) {
-    GroupEntity(nextjs, "Next.js", #000000, NextJS) {
-        ServerlessAPIRoute(s3uploadRoute, "api/s3-upload")
-        ServerlessAPIRoute(listingsRoute, "api/listings")
-        ServerlessAPIRoute(bidsRoute, "api/bids")
-        ServerlessAPIRoute(authRoute, "api/next-auth")
-        Page(homePage, "/")
-        Page(listingPage, "/listings/[id]")
-        Page(bidsPage, "/bids")
-        Page(loginPage, "/login")
-
-        homePage .u.> listingsRoute
-        homePage .u.> bidsRoute
-        listingPage .u.> listingsRoute
-        bidsPage .u.> bidsRoute
-        loginPage .u.> authRoute
-    }
-}
+hide <<Route>> circle
 
 GroupEntity(turso, "Turso", #000000, Turso) {
-    DatabaseGroup(database, "Database") {
-        DatabaseTable(listingsDB, "Listings")
-        DatabaseTable(bidsDB, "Bids")
-        DatabaseTable(usersDB, "Users")
-    }
+    DatabaseTable(listingsDB, "Listings")
+    DatabaseTable(bidsDB, "Bids")
+    DatabaseTable(usersDB, "Users")
 }
 
 AWSCloudGroup(cloud) {
@@ -63,20 +41,53 @@ AWSCloudGroup(cloud) {
         SimpleStorageService(az_1_s3, "S3 bucket", "Image Storage")
     }
 
-    az_1_s3 .l.> cloudfront
+    az_1_s3 .r.> cloudfront
 }
 
+GroupEntity(vercel, "Vercel", #000000, Vercel) {
+    GroupEntity(nextjs, "Next.js", #000000, NextJS) {
+
+        class "api/s3-upload" <<Route>> {
+            +POST
+        }
+        class "api/listings" <<Route>> {
+            +GET
+            +POST
+            +PUT
+            +DELETE
+        }
+        class "api/bids" <<Route>> {
+            +GET
+            +POST
+        }
+        class "api/next-auth" <<Route>> {
+            +GET
+        }
+
+        "api/s3-upload" -> az_1_s3
+        "api/listings" <-> listingsDB
+        "api/bids" <-> bidsDB
+        "api/next-auth" <-> usersDB
 
 
-cloudfront -> listingPage
-cloudfront -> bidsPage
-cloudfront -> homePage
+        Page(homePage, "/")
+        Page(listingPage, "/listings/[id]")
+        Page(createListingPage, "/listings/create")
+        Page(loginPage, "/login")
 
-s3uploadRoute .> az_1_s3
-listingsRoute .> listingsDB
-bidsRoute .> bidsDB
-authRoute .> usersDB
 
+        listingPage <.. "api/listings" : GET
+        listingPage <.. "api/bids" : GET
+        listingPage ..> "api/bids" : POST
+        listingPage <-  cloudfront
+
+
+        createListingPage ..> "api/s3-upload" : POST
+        createListingPage ..> "api/listings" : POST
+
+        loginPage ..> "api/next-auth" : GET
+    }
+}
 
 
 @enduml
