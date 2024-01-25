@@ -1,10 +1,14 @@
+import { cn } from "@/lib/utils";
 import "@/styles/globals.css";
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Inter as FontSans } from "next/font/google";
 import Script from "next/script";
 import { z } from "zod";
 
-const inter = Inter({ subsets: ["latin"] });
+export const fontSans = FontSans({
+  subsets: ["latin"],
+  variable: "--font-sans",
+});
 
 const schema = z.object({
   ANALYTICS_ID: z.string(),
@@ -34,7 +38,14 @@ export default function RootLayout({
           data-domains={env.ANALYTICS_DOMAINS}
         />
       </head>
-      <body className={inter.className}>{children}</body>
+      <body
+        className={cn(
+          "min-h-screen bg-background font-sans antialiased",
+          fontSans.variable,
+        )}
+      >
+        {children}
+      </body>
     </html>
   );
 }
