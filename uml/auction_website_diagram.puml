@@ -4,6 +4,12 @@ hide stereotype
 skinparam linetype ortho
 allowmixing
 
+' define colors
+!define color_Turso #0cb69f
+!define color_AWS #FF7700
+!define color_Vercel #000000
+!define color_NextJS #b40c82
+
 !definelong Entity(e_alias, e_label, e_techn, e_color, e_stereo)
 rectangle "==$colorlabel(e_label, e_color)\n//[e_techn]//\n" <<e_stereo>> as e_alias
 !enddefinelong
@@ -12,10 +18,10 @@ rectangle "==$colorlabel(e_label, e_color)\n//[e_techn]//\n" <<e_stereo>> as e_a
 rectangle "$colorlabel(g_label, g_color)" as g_alias <<g_stereo>>
 !enddefinelong
 
-!define DatabaseTable(e_alias, e_techn) Entity(e_alias, "Table", e_techn, #FF7700, DatabaseTable)
+!define DatabaseTable(e_alias, e_techn) Entity(e_alias, "Table", e_techn, color_Turso, DatabaseTable)
 
 
-!define Page(e_alias, e_techn) Entity(e_alias, "Page", e_techn, #7AA116, Page)
+!define Page(e_alias, e_techn) Entity(e_alias, "Page", e_techn, color_NextJS, Page)
 
 
 !define AWSPuml https://raw.githubusercontent.com/awslabs/aws-icons-for-plantuml/v17.0/dist
@@ -28,24 +34,24 @@ rectangle "$colorlabel(g_label, g_color)" as g_alias <<g_stereo>>
 
 hide <<Route>> circle
 
-GroupEntity(turso, "Turso", #000000, Turso) {
+GroupEntity(turso, "Turso", color_Turso, Turso) {
     DatabaseTable(listingsDB, "Listings")
     DatabaseTable(bidsDB, "Bids")
     DatabaseTable(usersDB, "Users")
 }
 
-AWSCloudGroup(cloud) {
+GroupEntity(aws, "AWS Cloud", color_AWS, AWS) {
     CloudFrontDownloadDistribution(cloudfront, "CloudFront", "CDN")
 
     AvailabilityZoneGroup(az_1, "us-east-1") {
         SimpleStorageService(az_1_s3, "S3 bucket", "Image Storage")
     }
 
-    az_1_s3 .r.> cloudfront
+    az_1_s3 .right.> cloudfront
 }
 
-GroupEntity(vercel, "Vercel", #000000, Vercel) {
-    GroupEntity(nextjs, "Next.js", #000000, NextJS) {
+GroupEntity(vercel, "Vercel", color_Vercel, Vercel) {
+    GroupEntity(nextjs, "Next.js", color_NextJS, NextJS) {
 
         class "api/s3-upload" <<Route>> {
             +POST
@@ -64,10 +70,10 @@ GroupEntity(vercel, "Vercel", #000000, Vercel) {
             +GET
         }
 
-        "api/s3-upload" -> az_1_s3
-        "api/listings" <-> listingsDB
-        "api/bids" <-> bidsDB
-        "api/next-auth" <-> usersDB
+        "api/s3-upload" -right-> az_1_s3
+        "api/listings" <-down-> listingsDB
+        "api/bids" <-down-> bidsDB
+        "api/next-auth" <-down-> usersDB
 
 
         Page(homePage, "/")
@@ -85,7 +91,8 @@ GroupEntity(vercel, "Vercel", #000000, Vercel) {
         createListingPage ..> "api/s3-upload" : POST
         createListingPage ..> "api/listings" : POST
 
-        loginPage ..> "api/next-auth" : GET
+        loginPage ..> "api/next-auth" : POST
+        loginPage <.. "api/next-auth" : GET
     }
 }
 
