@@ -1,0 +1,100 @@
+@startuml AuctionWesite
+' left to right direction
+hide stereotype
+skinparam linetype ortho
+allowmixing
+
+' define colors
+!define color_Turso #0cb69f
+!define color_AWS #FF7700
+!define color_Vercel #000000
+!define color_NextJS #b40c82
+
+!definelong Entity(e_alias, e_label, e_techn, e_color, e_stereo)
+rectangle "==$colorlabel(e_label, e_color)\n//[e_techn]//\n" <<e_stereo>> as e_alias
+!enddefinelong
+
+!definelong GroupEntity(g_alias, g_label, g_color, g_stereo)
+rectangle "$colorlabel(g_label, g_color)" as g_alias <<g_stereo>>
+!enddefinelong
+
+!define DatabaseTable(e_alias, e_techn) Entity(e_alias, "Table", e_techn, color_Turso, DatabaseTable)
+
+
+!define Page(e_alias, e_techn) Entity(e_alias, "Page", e_techn, color_NextJS, Page)
+
+
+!define AWSPuml https://raw.githubusercontent.com/awslabs/aws-icons-for-plantuml/v17.0/dist
+!include AWSPuml/AWSCommon.puml
+!include AWSPuml/Groups/AWSCloud.puml
+!include AWSPuml/Groups/AvailabilityZone.puml
+!include AWSPuml/NetworkingContentDelivery/CloudFrontDownloadDistribution.puml
+!include AWSPuml/Storage/SimpleStorageService.puml
+
+
+hide <<Route>> circle
+
+GroupEntity(turso, "Turso", color_Turso, Turso) {
+    DatabaseTable(listingsDB, "Listings")
+    DatabaseTable(bidsDB, "Bids")
+    DatabaseTable(usersDB, "Users")
+}
+
+GroupEntity(aws, "AWS Cloud", color_AWS, AWS) {
+    CloudFrontDownloadDistribution(cloudfront, "CloudFront", "CDN")
+
+    AvailabilityZoneGroup(az_1, "us-east-1") {
+        SimpleStorageService(az_1_s3, "S3 bucket", "Image Storage")
+    }
+
+    az_1_s3 .right.> cloudfront
+}
+
+GroupEntity(vercel, "Vercel", color_Vercel, Vercel) {
+    GroupEntity(nextjs, "Next.js", color_NextJS, NextJS) {
+
+        class "api/s3-upload" <<Route>> {
+            +POST
+        }
+        class "api/listings" <<Route>> {
+            +GET
+            +POST
+            +PUT
+            +DELETE
+        }
+        class "api/bids" <<Route>> {
+            +GET
+            +POST
+        }
+        class "api/next-auth" <<Route>> {
+            +GET
+        }
+
+        "api/s3-upload" -right-> az_1_s3
+        "api/listings" <-down-> listingsDB
+        "api/bids" <-down-> bidsDB
+        "api/next-auth" <-down-> usersDB
+
+
+        Page(homePage, "/")
+        Page(listingPage, "/listings/[id]")
+        Page(createListingPage, "/listings/create")
+        Page(loginPage, "/login")
+
+
+        listingPage <.. "api/listings" : GET
+        listingPage <.. "api/bids" : GET
+        listingPage ..> "api/bids" : POST
+        listingPage <-  cloudfront
+
+
+        createListingPage ..> "api/s3-upload" : POST
+        createListingPage ..> "api/listings" : POST
+
+        loginPage ..> "api/next-auth" : POST
+        loginPage <.. "api/next-auth" : GET
+    }
+}
+
+
+@enduml
