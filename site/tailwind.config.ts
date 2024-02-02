@@ -10,6 +10,9 @@ const config = {
 	],
   prefix: "",
   theme: {
+    fontFamily: {
+      sans: ["var(--font-sans)"],
+    },
     container: {
       center: true,
       padding: "2rem",
@@ -74,7 +77,7 @@ const config = {
       },
     },
   },
-  plugins: [require("tailwindcss-animate")],
+  plugis: [require("tailwindcss-animate")],
 } satisfies Config
 
 export default config
