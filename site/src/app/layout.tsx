@@ -1,3 +1,4 @@
+import { ThemeProvider } from "@/components/Theme";
 import { cn } from "@/lib/utils";
 import "@/styles/globals.css";
 import type { Metadata } from "next";
@@ -38,14 +39,16 @@ export default function RootLayout({
           data-domains={env.ANALYTICS_DOMAINS}
         />
       </head>
-      <body
-        className={cn(
-          "min-h-screen bg-background font-sans antialiased",
-          fontSans.variable,
-        )}
-      >
-        {children}
-      </body>
+      <ThemeProvider>
+        <body
+          className={cn(
+            "min-h-screen bg-background font-sans antialiased",
+            fontSans.variable,
+          )}
+        >
+          {children}
+        </body>
+      </ThemeProvider>
     </html>
   );
 }
