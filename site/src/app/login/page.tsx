@@ -4,8 +4,8 @@
 // import { getProviders } from "next-auth/react";
 // import { redirect } from "next/navigation";
 
-export default async function Page() {
-  // const session = await getServerSession(authOptions);
+export default function Page() {
+  // const session = await getServerSession(authOptions); // maybe dont use server session
   // if (session) {
   //   return redirect("/");
   // }
