@@ -1,8 +1,8 @@
+import Jumbotron from "@/components/Jumbotron";
 import { Button } from "@/components/ui/button";
 import "@/styles/globals.css";
 import Link from "next/link";
-import Jumbotron from "@/components/Jumbotron";
-        
+
 export default function Page() {
   return (
     <section>

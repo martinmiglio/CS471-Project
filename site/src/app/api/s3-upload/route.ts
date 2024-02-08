@@ -23,4 +23,3 @@ export const POST = route.configure({
     return "images/" + sanitizeKey(newName);
   },
 });
-
