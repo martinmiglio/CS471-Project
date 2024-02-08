@@ -1,3 +1,5 @@
+import Footer from "@/components/Footer";
+import NavBar from "@/components/NavBar";
 import GlobalProvider from "@/components/providers/GlobalProvider";
 import { cn } from "@/lib/utils";
 import "@/styles/globals.css";
@@ -46,7 +48,13 @@ export default function RootLayout({
             fontSans.variable,
           )}
         >
-          {children}
+          <div className="mx-auto flex w-11/12 max-w-screen-md flex-col">
+            <div className="flex min-h-screen flex-col">
+              <NavBar />
+              {children}
+            </div>
+            <Footer />
+          </div>
         </body>
       </GlobalProvider>
     </html>
