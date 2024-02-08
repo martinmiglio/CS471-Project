@@ -3,6 +3,7 @@
 // import { getServerSession } from "next-auth/next";
 // import { getProviders } from "next-auth/react";
 // import { redirect } from "next/navigation";
+import Jumbotron from "@/components/Jumbotron";
 
 export default function Page() {
   // const session = await getServerSession(authOptions); // maybe dont use server session
@@ -14,37 +15,55 @@ export default function Page() {
   // const providers = (await getProviders()) ?? []; // each provider should be displayed as a button
 
   // TODO: Implement login page
-  return (    
-  <section className="bg-white dark:bg-gray-900">
-
-
-      <div className="py-8 px-4 mx-auto max-w-screen-xl text-center lg:py-16">
-        <h1 className="mb-4 text-4xl font-extrabold tracking-tight leading-none text-gray-900 md:text-5xl lg:text-6xl dark:text-white">Biddr. Bid More. Be Happy.</h1>
-        <p className="mb-8 text-lg font-normal text-gray-500 lg:text-xl sm:px-16 lg:px-48 dark:text-gray-400">Buy, Sell, Trade!</p>
-            <div>
-              <h1 className="mb-4 text-4xl font-extrabold tracking-tight leading-none text-gray-900 md:text-5xl lg:text-6xl dark:text-white">Welcome!</h1>
-            </div>
-          <div className="flex flex-col space-y-4 sm:flex-row sm:justify-center sm:space-y-0">
-            <div className="mb-6">
-              <label htmlFor="default-input" className="block mb-2 text-sm font-bold text-gray-900 dark:text-white">Username</label>
-              <input type="text" id="default-input" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"/>
-            </div>          
+  return (
+    <section className="bg-white dark:bg-gray-900">
+      <div className="mx-auto max-w-screen-xl px-4 py-8 text-center lg:py-16">
+        <Jumbotron />
+        <div>
+          <h1 className="mb-4 text-4xl font-extrabold leading-none tracking-tight text-gray-900 dark:text-white md:text-5xl lg:text-6xl">
+            Welcome!
+          </h1>
+        </div>
+        <div className="flex flex-col space-y-4 sm:flex-row sm:justify-center sm:space-y-0">
+          <div className="mb-6">
+            <label
+              htmlFor="default-input"
+              className="mb-2 block text-sm font-bold text-gray-900 dark:text-white"
+            >
+              Username
+            </label>
+            <input
+              type="text"
+              id="default-input"
+              className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
+            />
           </div>
-          <div className="flex flex-col space-y-4 sm:flex-row sm:justify-center sm:space-y-0">
-            <div className="mb-6">
-                <label htmlFor="default-input" className="block mb-2 text-sm font-bold text-gray-900 dark:text-white">Password</label>
-                <input type="text" id="default-input" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"/>
-            </div>  
+        </div>
+        <div className="flex flex-col space-y-4 sm:flex-row sm:justify-center sm:space-y-0">
+          <div className="mb-6">
+            <label
+              htmlFor="default-input"
+              className="mb-2 block text-sm font-bold text-gray-900 dark:text-white"
+            >
+              Password
+            </label>
+            <input
+              type="text"
+              id="default-input"
+              className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
+            />
           </div>
+        </div>
       </div>
 
-
-    <div  className="flex justify-center space-x-8">
-      <button className="bg-blue-600 text-white px-4 py-2 rounded-md">Login</button>
-      <button className="bg-green-600 text-white px-4 py-2 rounded-md">Sign Up</button>
-    </div>
-  </section>
-
-
+      <div className="flex justify-center space-x-8">
+        <button className="rounded-md bg-blue-600 px-4 py-2 text-white">
+          Login
+        </button>
+        <button className="rounded-md bg-green-600 px-4 py-2 text-white">
+          Sign Up
+        </button>
+      </div>
+    </section>
   );
 }
