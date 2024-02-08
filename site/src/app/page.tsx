@@ -1,23 +1,19 @@
 import { Button } from "@/components/ui/button";
 import "@/styles/globals.css";
 import Link from "next/link";
-
+import Jumbotron from "@/components/Jumbotron";
+        
 export default function Page() {
   return (
     <section>
       <div className="mx-auto max-w-screen-xl px-4 py-8 text-center lg:py-16">
-        <h1 className="mb-4 text-4xl font-extrabold leading-none tracking-tight md:text-5xl lg:text-6xl">
-          Biddr. Bid More. Be Happy.
-        </h1>
-        <p className="mb-8 text-lg font-normal text-primary sm:px-16 lg:px-48 lg:text-xl">
-          Buy, Sell, Trade!
-        </p>
+        <Jumbotron />
         <div className="flex flex-col space-y-4 sm:flex-row sm:justify-center sm:space-y-0">
           <Button
             className="inline-flex items-center justify-center px-5 py-3 sm:ms-4"
             asChild
           >
-            <Link href="/onboard">
+            <Link href="/login">
               Log In
               <svg
                 className="ms-2 h-3.5 w-3.5 rtl:rotate-180"
