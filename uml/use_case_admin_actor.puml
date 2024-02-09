@@ -1,0 +1,50 @@
+@startuml AdminActorUseCase
+
+left to right direction
+actor Admin as A
+
+rectangle "Auction Site" {
+  usecase "Login to System" as LoginUC1
+  usecase "Edit User Listing" as EditListUC2
+  usecase "Remove User Listing" as RemoveListUC3
+  usecase "View Statistics" as ViewStatUC4
+  usecase "Receive Notifications" as RxNotUC5
+  usecase "View Listings" as ViewListUC6
+  usecase "Remove User" as RmvUserUC7
+
+}
+
+rectangle "DB of Users" {
+
+}
+
+rectangle "DB of Listings" {
+
+}
+
+rectangle "DB of Bids"{
+
+}
+
+
+A -- LoginUC1
+A -- EditListUC2
+A -- RemoveListUC3
+A -- ViewStatUC4
+A -- RxNotUC5
+A -- ViewListUC6
+A -- RmvUserUC7
+
+ViewListUC6 -- "DB of Listings"
+RemoveListUC3 -- "DB of Listings"
+EditListUC2 -- "DB of Listings"
+EditListUC2 -- "DB of Bids"
+RxNotUC5 -- "DB of Listings"
+RxNotUC5 -- "DB of Bids"
+LoginUC1 -- "DB of Users"
+RmvUserUC7 -- "DB of Users"
+ViewStatUC4 -- "DB of Bids"
+ViewStatUC4 -- "DB of Listings"
+
+
+@enduml

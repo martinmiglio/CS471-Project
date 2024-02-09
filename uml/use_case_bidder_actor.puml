@@ -1,0 +1,47 @@
+@startuml BidderActorUseCase
+
+left to right direction
+actor Bidder as B
+
+rectangle "Auction Site" {
+  usecase "Post a Bid" as PostBidUC1
+  usecase "View a Listing" as ViewListUC2
+  usecase "Remove a Listing" as RemoveListUC3
+  usecase "Receive Notifications" as RxNotUC4
+  usecase "Login to System" as LoginUC5
+}
+
+rectangle "DB of Users" {
+
+}
+
+rectangle "DB of Listings" {
+
+}
+
+rectangle "DB of Bids"{
+
+}
+rectangle "Financial System"{
+
+}
+
+
+B -- PostBidUC1
+B -- ViewListUC2
+B -- RemoveListUC3
+B -- RxNotUC4
+B -- LoginUC5
+
+
+PostBidUC1 -- "DB of Bids"
+PostBidUC1 -- "Financial System"
+ViewListUC2 -- "DB of Listings"
+RemoveListUC3 -- "DB of Users"
+RxNotUC4 -- "DB of Listings"
+RxNotUC4 -- "DB of Bids"
+LoginUC5 -- "DB of Users"
+
+@enduml
+
+

@@ -1,0 +1,46 @@
+@startuml ListerActorUseCase
+
+left to right direction
+actor Lister as L
+
+rectangle "Auction Site" {
+  usecase "Post a Listing" as PostListUC1
+  usecase "View a Listing" as ViewListUC2
+  usecase "Remove a Listing" as RemoveListUC3
+  usecase "Edit a Listing" as EditListUC5
+  usecase "Receive Notifications" as RxNotUC4
+  usecase "Login to System" as LoginUC6
+}
+
+rectangle "DB of Users" {
+
+}
+
+rectangle "DB of Listings" {
+
+}
+
+rectangle "DB of Bids"{
+
+}
+
+
+L -- PostListUC1
+L -- ViewListUC2
+L -- RemoveListUC3
+L -- RxNotUC4
+L -- EditListUC5
+L -- LoginUC6
+
+
+PostListUC1 -- "DB of Listings"
+ViewListUC2 -- "DB of Listings"
+RemoveListUC3 -- "DB of Users"
+RxNotUC4 -- "DB of Listings"
+RxNotUC4 -- "DB of Bids"
+EditListUC5 -- "DB of Listings"
+LoginUC6 -- "DB of Users"
+
+@enduml
+
+
