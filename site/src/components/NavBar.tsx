@@ -20,7 +20,7 @@ export default function NavBar() {
   return (
     <span className="flex h-16 w-full items-center justify-between">
       <Link href="/" data-umami-event="NavBar - Home">
-        <h1 className="select-none text-3xl text-primary">biddr</h1>
+        <h1 className="select-none text-3xl text-primary">Biddr.pro</h1>
       </Link>
       {session ? (
         <DropdownMenu>

@@ -21,9 +21,9 @@ const schema = z.object({
 const env = schema.parse(process.env);
 
 export const metadata: Metadata = {
-  title: "CS471 Project",
-  description:
-    "A project to demonstrate the principles of Software Engineering",
+  title: "Biddr.pro",
+  description: "Bid More. Be Happy. Biddr.pro",
+  metadataBase: new URL("https://biddr.pro"),
 };
 
 export default function RootLayout({

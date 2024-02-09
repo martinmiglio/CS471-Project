@@ -26,7 +26,7 @@ Deployed to [Vercel](https://vercel.com) using [Next.js](https://nextjs.org) wit
 ## Deployment
 
 This project is automatically deployed to [Vercel](https://vercel.com) on every push to the `main` branch.
-Accessible from [biddr.martinmiglio.dev](https://biddr.martinmiglio.dev/).
+Accessible from [biddr.pro](https://biddr.pro/).
 
 ---
 
