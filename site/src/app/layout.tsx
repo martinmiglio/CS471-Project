@@ -1,8 +1,10 @@
+import Footer from "@/components/Footer";
+import NavBar from "@/components/NavBar";
 import GlobalProvider from "@/components/providers/GlobalProvider";
 import { cn } from "@/lib/utils";
 import "@/styles/globals.css";
 import type { Metadata } from "next";
-import { Inter as FontSans } from "next/font/google";
+import { Gabarito as FontSans } from "next/font/google";
 import Script from "next/script";
 import { z } from "zod";
 
@@ -19,9 +21,9 @@ const schema = z.object({
 const env = schema.parse(process.env);
 
 export const metadata: Metadata = {
-  title: "CS471 Project",
-  description:
-    "A project to demonstrate the principles of Software Engineering",
+  title: "Biddr.pro",
+  description: "Bid More. Be Happy. Biddr.pro",
+  metadataBase: new URL("https://biddr.pro"),
 };
 
 export default function RootLayout({
@@ -46,7 +48,13 @@ export default function RootLayout({
             fontSans.variable,
           )}
         >
-          {children}
+          <div className="mx-auto flex w-11/12 max-w-screen-md flex-col">
+            <div className="flex min-h-screen flex-col">
+              <NavBar />
+              {children}
+            </div>
+            <Footer />
+          </div>
         </body>
       </GlobalProvider>
     </html>

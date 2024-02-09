@@ -14,7 +14,7 @@ export default function Page() {
             asChild
           >
             <Link href="/login">
-              Log In
+              Get started
               <svg
                 className="ms-2 h-3.5 w-3.5 rtl:rotate-180"
                 aria-hidden="true"

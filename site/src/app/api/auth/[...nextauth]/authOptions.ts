@@ -20,6 +20,9 @@ const authOptions: AuthOptions = {
       clientSecret: env.GOOGLE_CLIENT_SECRET,
     }),
   ],
+  pages: {
+    signIn: "/login",
+  },
   debug: process.env.NODE_ENV === "development",
   secret: env.NEXTAUTH_SECRET,
 };
