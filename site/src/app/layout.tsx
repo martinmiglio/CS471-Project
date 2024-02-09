@@ -4,7 +4,7 @@ import GlobalProvider from "@/components/providers/GlobalProvider";
 import { cn } from "@/lib/utils";
 import "@/styles/globals.css";
 import type { Metadata } from "next";
-import { Inter as FontSans } from "next/font/google";
+import { Gabarito as FontSans } from "next/font/google";
 import Script from "next/script";
 import { z } from "zod";
 
