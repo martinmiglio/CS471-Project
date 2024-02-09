@@ -4,6 +4,10 @@ on:
   push:
     paths:
       - uml/**
+  pull_request:
+    branches: [main]
+    paths:
+      - uml/**
   workflow_dispatch:
 
 jobs:
