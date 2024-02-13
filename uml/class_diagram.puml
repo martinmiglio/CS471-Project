@@ -1,0 +1,86 @@
+@startuml ClassDiagram
+
+class Account {
+  +id: String
+  +userId: String
+  +type: String
+  +provider: String
+  +providerAccountId: String
+  +refresh_token: String
+  +access_token: String
+  +expires_at: Int
+  +token_type: String
+  +scope: String
+  +id_token: String
+  +session_state: String
+}
+
+class Session {
+  +id: String
+  +sessionToken: String
+  +userId: String
+  +expires: DateTime
+}
+
+class User {
+  +id: String
+  +name: String
+  +email: String
+  +emailVerified: DateTime
+  +image: String
+}
+
+class Listing {
+  +id: String
+  +title: String
+  +description: String
+  +price: Float
+  +image: String
+  +userId: String
+  +status: String
+  +expires: DateTime
+}
+
+class Bid {
+  +id: String
+  +price: Float
+  +userId: String
+  +listingId: String
+}
+
+interface LandingPage
+interface AboutPage
+interface LoginPage
+interface ViewListings
+interface AddBid
+interface CreateListing
+interface UserListingsBidsView
+interface AdminInterface
+
+' one to many association between user and sessions
+User "1" -- "0..*" Session
+User "1" -- "1..*" Account
+User "1" -- "1..*" UserGroup
+
+
+AuthenticationRoute --|> Session
+
+
+LandingPage --> AboutPage
+LandingPage --> LoginPage
+LoginPage --> AuthenticationRoute
+LoginPage --> ViewListings
+LoginPage --> AddBid
+LoginPage --> CreateListing
+LoginPage --> UserListingsBidsView
+LoginPage --> AdminInterface
+
+
+' dependencies
+ViewListings ..> Listing
+AddBid ..> Bid
+CreateListing ..> Listing
+UserListingsBidsView ..> Listing
+UserListingsBidsView ..> Bid
+
+@enduml
