@@ -42,7 +42,7 @@ export async function GET(req: NextRequest) {
   });
 }
 
-export const ListingSchema = z.object({
+const ListingSchema = z.object({
   title: z.string(),
   description: z.string(),
   price: z.number().positive().optional(),
@@ -51,16 +51,16 @@ export const ListingSchema = z.object({
 });
 
 export async function POST(req: NextRequest) {
-  // const session = await getServerSession({ req, ...authOptions });
+  const session = await getServerSession({ req, ...authOptions });
 
-  // if (!session?.user?.email) {
-  //   return NextResponse.json(
-  //     {
-  //       message: "unauthenticated",
-  //     },
-  //     { status: 401 },
-  //   );
-  // }
+  if (!session?.user?.email) {
+    return NextResponse.json(
+      {
+        message: "unauthenticated",
+      },
+      { status: 401 },
+    );
+  }
 
   const unvalidatedPost = await req.json();
 
@@ -74,8 +74,7 @@ export async function POST(req: NextRequest) {
   const { title, description, price, image, expiresAt } = post;
 
   const listing = await createListing(
-    // session.user.email,
-    "marmig0404@gmail.com",
+    session.user.email,
     title,
     description,
     price ?? 0,
