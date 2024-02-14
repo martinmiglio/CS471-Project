@@ -2,21 +2,16 @@
 
 import { Input } from "@/components/ui/input";
 import { useS3Upload } from "next-s3-upload";
-import { useState, useEffect } from "react";
+import { useState } from "react";
+import { type UseFormRegister } from "react-hook-form";
+
+type ImageUploaderProps = ReturnType<UseFormRegister<any>>;
 
 export default function ImageUploader({
-  setImageUrl,
-}: Readonly<{
-  setImageUrl: (url: string) => void;
-}>) {
+  onChange,
+}: Readonly<ImageUploaderProps>) {
   const { uploadToS3 } = useS3Upload();
   const [file, setFile] = useState<File | null>(null);
-
-  useEffect(() => {
-    if (!file) {
-      return;
-    }
-  }, [file, setImageUrl, uploadToS3]);
 
   const handleFileChange = async (
     event: React.ChangeEvent<HTMLInputElement>,
@@ -34,7 +29,11 @@ export default function ImageUploader({
     const { key } = await uploadToS3(event.target.files[0]);
     const url = `https://${process.env.NEXT_PUBLIC_CDN_DOMAIN}/${key}`;
 
-    setImageUrl(url);
+    onChange({
+      target: {
+        value: url,
+      },
+    } as any);
   };
 
   return (
