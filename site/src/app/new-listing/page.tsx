@@ -1,48 +1,32 @@
-"use client";
+import authOptions from "@/app/api/auth/[...nextauth]/authOptions";
+import NewListingForm from "@/components/NewListingForm";
+import {
+  Card,
+  CardDescription,
+  CardHeader,
+  CardContent,
+  CardTitle,
+} from "@/components/ui/card";
+import { getServerSession } from "next-auth";
+import { redirect } from "next/navigation";
 
-import ImageInput from "@/components/ImageInput";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { useForm } from "react-hook-form";
-
-export default function NewListingPage() {
-  const { register, handleSubmit } = useForm();
-  const onSubmit = (data: any) => {
-    console.log(data);
-  };
+export default async function Page() {
+  const session = await getServerSession(authOptions);
+  if (!session) {
+    redirect("/");
+  }
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
-      <Label>
-        Title:
-        <Input {...register("title")} />
-      </Label>
-      <Label>
-        Description:
-        <Input {...register("description")} />
-      </Label>
-      <Label>
-        Price:
-        <Input
-          {...register("price")}
-          type="number"
-          step="0.01"
-          min="0"
-          placeholder="0.00"
-        />
-      </Label>
-      <Label>
-        Image:
-        <ImageInput {...register("image")} />
-      </Label>
-      <Label>
-        Expires At:
-        <Input {...register("expiresAt")} type="datetime-local" />
-      </Label>
-      <Button asChild>
-        <Input type="submit" />
-      </Button>
-    </form>
+    <Card>
+      <CardHeader>
+        <CardTitle>Create a new listing</CardTitle>
+        <CardDescription>
+          Fill out the form below to create a new listing.
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <NewListingForm />
+      </CardContent>
+    </Card>
   );
 }
