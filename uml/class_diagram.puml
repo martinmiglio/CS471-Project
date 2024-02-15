@@ -28,6 +28,7 @@ class User {
   +email: String
   +emailVerified: DateTime
   +image: String
+  +userGroupIds: String[]
 }
 
 class Listing {
@@ -47,40 +48,101 @@ class Bid {
   +userId: String
   +listingId: String
 }
+enum UserGroupType {
+  ADMIN
+}
+
+class UserGroup {
+  +id: String
+  +users: User[]
+  +type: UserGroupType
+}
+
+' associations between entities
+UserGroupType "1" -- "1" UserGroup
+User "1" -- "0..*" Session
+User "1" -- "1..*" Account
+User "1" -- "0..*" UserGroup
+
+
+
+class ListingsRoute {
+  +createListing()
+  +updateListing()
+  +deleteListing()
+  +getListings()
+  +getListingById()
+  +getListingsByUserId()
+}
+
+class AuthenticationRoute {
+  +createSession()
+  +updateSession()
+  +deleteSession()
+  +createUser()
+  +deleteUser()
+  +createAccount()
+  +deleteAccount()
+}
+
+class BidsRoute {
+  +createBid()
+  +updateBid()
+  +deleteBid()
+  +getBidsByListing()
+  +getBidById()
+  +getBidsByUserId()
+}
+
+' associations between routes and entities
+AuthenticationRoute "1" -- "0..*" Session : CRUD
+AuthenticationRoute "1" -- "0..*" User : CRUD
+AuthenticationRoute "1" -- "0..*" Account : CRUD
+
+ListingsRoute "1" -- "0..*" Listing : CRUD
+ListingsRoute "1" -- "1" AuthenticationRoute : Reads
+
+BidsRoute "1" -- "0..*" Bid : CRUD
+BidsRoute "1" -- "1" AuthenticationRoute : Reads
+
 
 interface LandingPage
 interface AboutPage
 interface LoginPage
-interface ViewListings
-interface AddBid
-interface CreateListing
-interface UserListingsBidsView
-interface AdminInterface
-
-' one to many association between user and sessions
-User "1" -- "0..*" Session
-User "1" -- "1..*" Account
-User "1" -- "1..*" UserGroup
+interface ListingPage
+interface CreateListingPage
+interface UserProfilePage
+interface AdminPage
+interface NavigationComponent
+interface ListingsFeedComponent
+interface AddBidComponent
 
 
-AuthenticationRoute --|> Session
+' dependency graph of pages and components
+LandingPage <.. AboutPage
+LandingPage <.. NavigationComponent
+LandingPage <.. ListingsFeedComponent
+
+NavigationComponent <.. LoginPage
+NavigationComponent <.. CreateListingPage
+NavigationComponent <.. UserProfilePage
+
+ListingsFeedComponent <.. AddBidComponent
+ListingsFeedComponent <.. ListingPage
 
 
-LandingPage --> AboutPage
-LandingPage --> LoginPage
-LoginPage --> AuthenticationRoute
-LoginPage --> ViewListings
-LoginPage --> AddBid
-LoginPage --> CreateListing
-LoginPage --> UserListingsBidsView
-LoginPage --> AdminInterface
+' these are the routes that the pages and components are connected to
+' these connections im unsure of how to represent
+LoginPage -- AuthenticationRoute
+ListingPage -- ListingsRoute
+CreateListingPage -- ListingsRoute
+UserProfilePage -- AuthenticationRoute
+AdminPage -- AuthenticationRoute
+AdminPage -- ListingsRoute
+AdminPage -- BidsRoute
+AddBidComponent -- BidsRoute
 
 
-' dependencies
-ViewListings ..> Listing
-AddBid ..> Bid
-CreateListing ..> Listing
-UserListingsBidsView ..> Listing
-UserListingsBidsView ..> Bid
+
 
 @enduml
