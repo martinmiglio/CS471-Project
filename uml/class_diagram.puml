@@ -59,10 +59,10 @@ class UserGroup {
 }
 
 ' associations between entities
-UserGroupType "1" -- "1" UserGroup
-User "1" -- "0..*" Session
-User "1" -- "1..*" Account
-User "1" -- "0..*" UserGroup
+UserGroupType "1" -- "1" UserGroup : Has
+User "1" -- "0..*" Session : Logs in
+User "1" -- "1..*" Account : Has
+User "1" -- "0..*" UserGroup : Belongs to
 
 
 
