@@ -127,21 +127,22 @@ LandingPage <.. ListingsFeedComponent
 NavigationComponent <.. LoginPage
 NavigationComponent <.. CreateListingPage
 NavigationComponent <.. UserProfilePage
+NavigationComponent <.. AdminPage
 
 ListingsFeedComponent <.. AddBidComponent
 ListingsFeedComponent <.. ListingPage
 
-
+ListingPage <.. AddBidComponent
 ' these are the routes that the pages and components are connected to
 ' these connections im unsure of how to represent
-LoginPage -- AuthenticationRoute
-ListingPage -- ListingsRoute
-CreateListingPage -- ListingsRoute
-UserProfilePage -- AuthenticationRoute
-AdminPage -- AuthenticationRoute
-AdminPage -- ListingsRoute
-AdminPage -- BidsRoute
-AddBidComponent -- BidsRoute
+LoginPage <.. AuthenticationRoute
+ListingPage <.. ListingsRoute
+CreateListingPage <.. ListingsRoute
+UserProfilePage <.. AuthenticationRoute
+AdminPage <.. AuthenticationRoute
+AdminPage <.. ListingsRoute
+AdminPage <.. BidsRoute
+AddBidComponent <.. BidsRoute
 
 
 
