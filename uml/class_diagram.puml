@@ -1,27 +1,5 @@
 @startuml ClassDiagram
 
-' class Account {
-'   +id: String
-'   +userId: String
-'   +type: String
-'   +provider: String
-'   +providerAccountId: String
-'   +refresh_token: String
-'   +access_token: String
-'   +expires_at: Int
-'   +token_type: String
-'   +scope: String
-'   +id_token: String
-'   +session_state: String
-' }
-
-' class Session {
-'   +id: String
-'   +sessionToken: String
-'   +userId: String
-'   +expires: DateTime
-' }
-
 class User {
   +id: String
   +name: String
@@ -60,8 +38,6 @@ class UserGroup {
 
 ' associations between entities
 UserGroupType "1" -- "1" UserGroup : Has
-' User "1" -- "0..*" Session : Logs in
-' User "1" -- "1..*" Account : Has
 User "1" -- "0..*" UserGroup : Belongs to
 
 
@@ -96,9 +72,7 @@ class BidsRoute {
 }
 
 ' associations between routes and entities
-' AuthenticationRoute "1" -- "0..*" Session : CRUD
 AuthenticationRoute "1" -- "0..*" User : CRUD
-' AuthenticationRoute "1" -- "0..*" Account : CRUD
 
 ListingsRoute "1" -- "0..*" Listing : CRUD
 ListingsRoute "1" -- "1" AuthenticationRoute : Reads
@@ -133,8 +107,8 @@ ListingsFeedComponent <.. AddBidComponent
 ListingsFeedComponent <.. ListingPage
 
 ListingPage <.. AddBidComponent
+
 ' these are the routes that the pages and components are connected to
-' these connections im unsure of how to represent
 LoginPage <.. AuthenticationRoute
 ListingPage <.. ListingsRoute
 CreateListingPage <.. ListingsRoute
@@ -143,8 +117,5 @@ AdminPage <.. AuthenticationRoute
 AdminPage <.. ListingsRoute
 AdminPage <.. BidsRoute
 AddBidComponent <.. BidsRoute
-
-
-
 
 @enduml
