@@ -29,17 +29,34 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ listing });
   }
 
-  const pageSize = Number.parseInt(
-    searchParams.get("pageSize") ?? DEFAULT_PAGE_SIZE.toString(),
-  );
-  const page = Number.parseInt(searchParams.get("page") ?? "1");
+  try {
+    const querySchema = z.object({
+      pageSize: z.coerce.number(),
+      page: z.coerce.number(),
+      orderBy: z.enum(["createdAt", "expires", "price"]).optional(),
+      orderDirection: z.enum(["asc", "desc"]).optional(),
+    });
 
-  const listings = await getAllListings(page, pageSize);
+    const query = querySchema.parse({
+      pageSize: searchParams.get("pageSize") ?? DEFAULT_PAGE_SIZE,
+      page: searchParams.get("page") ?? 1,
+      orderBy: searchParams.get("orderBy"),
+      orderDirection: searchParams.get("orderDirection"),
+    });
 
-  return NextResponse.json({
-    listings,
-    nextPage: listings.length === pageSize ? page + 1 : null,
-  });
+    const listings = await getAllListings(query);
+
+    return NextResponse.json({
+      listings,
+      nextPage: listings.length === query.pageSize ? query.page + 1 : null,
+    });
+  } catch (e) {
+    console.error(JSON.stringify(e));
+    return NextResponse.json(
+      { message: "Invalid search query" },
+      { status: 400 },
+    );
+  }
 }
 
 const ListingSchema = z.object({
@@ -68,7 +85,8 @@ export async function POST(req: NextRequest) {
   try {
     post = ListingSchema.parse(unvalidatedPost);
   } catch (e) {
-    return NextResponse.json({}, { status: 400 });
+    console.error(JSON.stringify(e));
+    return NextResponse.json({ message: "Invalid listing" }, { status: 400 });
   }
 
   const { title, description, price, image, expiresAt } = post;
