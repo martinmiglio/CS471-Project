@@ -60,7 +60,7 @@ export async function GET(req: NextRequest) {
 const ListingSchema = z.object({
   title: z.string(),
   description: z.string(),
-  price: z.number().positive().optional(),
+  price: z.coerce.number().nonnegative().optional(),
   image: z.string().url(),
   expiresAt: z.date().optional(),
 });

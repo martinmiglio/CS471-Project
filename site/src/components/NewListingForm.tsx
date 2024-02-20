@@ -19,22 +19,30 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Textarea } from "@/components/ui/textarea";
+import { useToast } from "@/components/ui/use-toast";
+import { type createListing } from "@/lib/prisma/listings";
 import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format } from "date-fns";
 import { CalendarIcon } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
 const newListingSchema = z.object({
   title: z.string().min(4).max(50),
   description: z.string().max(500).optional(),
-  price: z.number().positive().optional(),
+  price: z.coerce.number().nonnegative().optional(),
   image: z.string().url(),
   expires: z.date().optional(),
 });
 
 export default function NewListingForm() {
+  const router = useRouter();
+  const { toast } = useToast();
+  const [loading, setLoading] = useState(false);
+
   const form = useForm<z.infer<typeof newListingSchema>>({
     resolver: zodResolver(newListingSchema),
     defaultValues: {
@@ -43,8 +51,32 @@ export default function NewListingForm() {
     },
   });
 
-  const onSubmit = (values: z.infer<typeof newListingSchema>) => {
-    console.log(values);
+  const onSubmit = async (newListing: z.infer<typeof newListingSchema>) => {
+    setLoading(true);
+    const res = await fetch("/api/listings", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(newListing),
+    });
+
+    if (res.ok) {
+      const {
+        listing,
+      }: {
+        listing: Awaited<ReturnType<typeof createListing>>;
+      } = await res.json();
+      router.push(`/listings/${listing.id}`);
+      return;
+    }
+
+    toast({
+      title: "There was an error creating your listing!",
+      description: "Try submitting again",
+      variant: "destructive",
+    });
+    setLoading(false);
   };
 
   return (
@@ -167,8 +199,8 @@ export default function NewListingForm() {
             </FormItem>
           )}
         />
-        <Button className="w-full" type="submit">
-          Create Listing
+        <Button className="w-full" type="submit" disabled={loading}>
+          {loading ? "Submitting..." : "Create Listing"}
         </Button>
       </form>
     </Form>
