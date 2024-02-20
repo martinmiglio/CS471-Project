@@ -6,11 +6,15 @@ import "@/styles/globals.css";
 import { getServerSession } from "next-auth";
 import Link from "next/link";
 
-export default async function Page() {
+export default async function Page({
+  searchParams,
+}: Readonly<{
+  searchParams: { [key: string]: string | string[] | undefined };
+}>) {
   const session = await getServerSession(authOptions);
 
   if (session) {
-    return <ListingsList />;
+    return <ListingsList query={searchParams} />;
   }
 
   return (
