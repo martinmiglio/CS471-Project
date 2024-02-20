@@ -11,16 +11,30 @@ export async function getListingById(id: string) {
   });
 }
 
-export async function getAllListings(
-  page: number,
-  pageSize: number,
-  active = true,
-) {
+export async function getAllListings(query: {
+  page: number;
+  pageSize: number;
+  active?: boolean;
+  orderBy?: "createdAt" | "expires" | "price";
+  orderDirection?: "asc" | "desc";
+}) {
+  const queryDefaults = {
+    active: true,
+    orderBy: "expires",
+    orderDirection: "desc",
+  };
+  const { page, pageSize, active, orderBy, orderDirection } = {
+    ...queryDefaults,
+    ...query,
+  };
   return await prisma.listing.findMany({
     skip: (page - 1) * pageSize,
     take: pageSize,
     where: {
       expires: active ? { gt: new Date() } : undefined,
+    },
+    orderBy: {
+      [orderBy]: orderDirection,
     },
     include: {
       user: {

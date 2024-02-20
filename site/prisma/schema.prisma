@@ -67,15 +67,17 @@ model Listing {
     userId      String
     status      String   @default("active")
     expires     DateTime
+    createdAt   DateTime @default(now())
     user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
     bids        Bid[]
 }
 
 model Bid {
-    id        String  @id @default(cuid())
+    id        String   @id @default(cuid())
     price     Float
     userId    String
     listingId String
-    user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
-    listing   Listing @relation(fields: [listingId], references: [id], onDelete: Cascade)
+    createdAt DateTime @default(now())
+    user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+    listing   Listing  @relation(fields: [listingId], references: [id], onDelete: Cascade)
 }
