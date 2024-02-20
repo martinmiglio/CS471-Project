@@ -150,9 +150,9 @@ Resources:
               - "s3:*"
             Resource:
               - !Sub "arn:aws:s3:::${S3Bucket}"
-              - !Sub "arn:aws:s3:::${S3Bucket}/images/**/*.jpg"
-              - !Sub "arn:aws:s3:::${S3Bucket}/images/**/*.jpeg"
-              - !Sub "arn:aws:s3:::${S3Bucket}/images/**/*.png"
+              - !Sub "arn:aws:s3:::${S3Bucket}/images/*.jpg"
+              - !Sub "arn:aws:s3:::${S3Bucket}/images/*.jpeg"
+              - !Sub "arn:aws:s3:::${S3Bucket}/images/*.png"
           - Sid: "STSToken"
             Effect: "Allow"
             Action: "sts:GetFederationToken"
@@ -170,4 +170,3 @@ Resources:
     Properties:
       Name: !Sub /${AWS::StackName}/credentials/${IAMUser}
       SecretString: !Sub '{"AccessKeyId":"${AccessKey}","SecretAccessKey":"${AccessKey.SecretAccessKey}"}'
-
