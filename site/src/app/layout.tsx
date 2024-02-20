@@ -32,7 +32,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" className={cn("font-sans antialiased", fontSans.variable)}>
       <head>
         <Script
           async
@@ -42,12 +42,7 @@ export default function RootLayout({
         />
       </head>
       <GlobalProvider>
-        <body
-          className={cn(
-            "min-h-screen bg-background font-sans antialiased",
-            fontSans.variable,
-          )}
-        >
+        <body className="min-h-screen bg-background">
           <div className="mx-auto flex w-11/12 max-w-screen-md flex-col">
             <div className="flex min-h-screen flex-col">
               <NavBar />

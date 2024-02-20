@@ -1,5 +1,6 @@
 import AuthProvider from "./AuthProvider";
 import ThemeProvider from "./ThemeProvider";
+import ToastProvider from "./ToastProvider";
 import authOptions from "@/app/api/auth/[...nextauth]/authOptions";
 import { getServerSession } from "next-auth";
 import type { ReactNode } from "react";
@@ -13,7 +14,9 @@ export default async function Provider({
 
   return (
     <AuthProvider session={session}>
-      <ThemeProvider>{children}</ThemeProvider>
+      <ThemeProvider>
+        <ToastProvider>{children}</ToastProvider>
+      </ThemeProvider>
     </AuthProvider>
   );
 }
