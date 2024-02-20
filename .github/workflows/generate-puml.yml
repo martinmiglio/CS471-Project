@@ -2,10 +2,8 @@ name: Export PlantUML diagrams
 
 on:
   push:
-    paths:
-      - uml/**
-  pull_request:
-    branches: [main]
+    branches:
+      - '**'
     paths:
       - uml/**
   workflow_dispatch:
