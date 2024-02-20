@@ -3,6 +3,11 @@ import prisma from "./client";
 export async function getListingById(id: string) {
   return await prisma.listing.findUnique({
     where: { id },
+    include: {
+      user: {
+        select: { name: true },
+      },
+    },
   });
 }
 
@@ -30,6 +35,11 @@ export async function getAllListings(query: {
     },
     orderBy: {
       [orderBy]: orderDirection,
+    },
+    include: {
+      user: {
+        select: { name: true },
+      },
     },
   });
 }

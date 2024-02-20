@@ -1,4 +1,5 @@
 import authOptions from "../auth/[...nextauth]/authOptions";
+import { DEFAULT_LISTING_DURATION, DEFAULT_PAGE_SIZE } from "@/consts";
 import {
   createListing,
   getAllListings,
@@ -7,9 +8,6 @@ import {
 import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
-
-const DEFAULT_PAGE_SIZE = 20;
-const DEFAULT_LISTING_DURATION = 1000 * 60 * 60 * 24 * 7; // 1 week in ms
 
 export async function GET(req: NextRequest) {
   const { searchParams } = req.nextUrl;
