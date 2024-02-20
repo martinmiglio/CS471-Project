@@ -9,7 +9,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { LogOut, Moon, Sun, UserRound } from "lucide-react";
+import { LogOut, Moon, Sun, UserRound, PlusCircle } from "lucide-react";
 import { signIn, signOut, useSession } from "next-auth/react";
 import { useTheme } from "next-themes";
 import Link from "next/link";
@@ -61,6 +61,13 @@ function NavBarDropdownContent() {
 
   return (
     <DropdownMenuContent>
+      <DropdownMenuItem asChild>
+        <Link href="/new-listing" data-umami-event="NavBar - New Listing">
+          <PlusCircle className="mr-2 h-4 w-4" />
+          <span>Create new listing</span>
+        </Link>
+      </DropdownMenuItem>
+      <DropdownMenuSeparator />
       <DropdownMenuItem
         onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
         data-umami-event="NavBar - Toggle Dark Mode"
