@@ -1,9 +1,22 @@
+import authOptions from "@/app/api/auth/[...nextauth]/authOptions";
 import Jumbotron from "@/components/Jumbotron";
+import ListingsList from "@/components/ListingsList";
 import { Button } from "@/components/ui/button";
 import "@/styles/globals.css";
+import { getServerSession } from "next-auth";
 import Link from "next/link";
 
-export default function Page() {
+export default async function Page({
+  searchParams,
+}: Readonly<{
+  searchParams: { [key: string]: string | string[] | undefined };
+}>) {
+  const session = await getServerSession(authOptions);
+
+  if (session) {
+    return <ListingsList query={searchParams} />;
+  }
+
   return (
     <section>
       <div className="mx-auto max-w-screen-xl px-4 py-8 text-center lg:py-16">
