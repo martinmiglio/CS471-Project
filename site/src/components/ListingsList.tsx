@@ -33,7 +33,7 @@ export default async function ListingsList({
   const hasNextPage = listings.length >= (pageSize ?? DEFAULT_PAGE_SIZE);
 
   return (
-    <div>
+    <div className="flex flex-col space-y-2">
       <ul className="flex flex-col space-y-2">
         {listings.map((listing) => (
           <li key={listing.id}>
