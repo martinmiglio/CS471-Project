@@ -17,6 +17,11 @@ export async function getAllListings(
     where: {
       expires: active ? { gt: new Date() } : undefined,
     },
+    include: {
+      user: {
+        select: { name: true },
+      },
+    },
   });
 }
 
