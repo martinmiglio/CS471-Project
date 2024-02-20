@@ -1,7 +1,11 @@
 import { DEFAULT_PAGE_SIZE } from "../consts";
 import PageSelector from "@/components/PageSelector";
-import { AspectRatio } from "@/components/ui/aspect-ratio";
-import { ResizablePanel, ResizablePanelGroup } from "@/components/ui/resizable";
+import {
+  Card,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { getAllListings } from "@/lib/prisma/listings";
 import Image from "next/image";
 import Link from "next/link";
@@ -30,46 +34,38 @@ export default async function ListingsList({
 
   return (
     <div>
-      <ul>
+      <ul className="flex flex-col space-y-2">
         {listings.map((listing) => (
-          <li key={listing.id} style={{ marginBottom: "10px" }}>
+          <li key={listing.id}>
             <Link href={`/listings/${listing.id}`}>
-              {listing.title}
-              <AspectRatio ratio={1}>
-                <ResizablePanelGroup
-                  direction="horizontal"
-                  className="min-h-[200px] max-w-md"
-                >
-                  <ResizablePanel defaultSize={75}>
-                    <div className="flex h-full items-center justify-center p-6">
-                      <Image
-                        src={
-                          listing?.image ??
-                          "https://source.unsplash.com/random/400x400"
-                        }
-                        alt={listing.title ?? "Listing Image"}
-                        width={200}
-                        height={200}
-                      />
+              <Card>
+                <CardHeader className="flex flex-row space-x-4">
+                  <Image
+                    src={listing.image}
+                    alt={listing.title}
+                    className="rounded-md object-cover"
+                    width={184}
+                    height={184}
+                  />
+                  <div className="flex w-full flex-col justify-between">
+                    <div className="flex flex-col space-y-2">
+                      <CardTitle>{listing.title}</CardTitle>
+                      <CardDescription>{listing.description}</CardDescription>
                     </div>
-                  </ResizablePanel>
-                  <ResizablePanel>
-                    <div className=" items-center justify-center p-6">
-                      {listing.description}
+                    <div className="flex justify-between">
+                      <span>${listing.price.toFixed(2)} • 0 bids</span>
+                      <span className="text-muted-foreground">
+                        {listing.user.name}
+                      </span>
                     </div>
-                    <div>{listing.price}</div>
-                  </ResizablePanel>
-                </ResizablePanelGroup>
-              </AspectRatio>
+                  </div>
+                </CardHeader>
+              </Card>
             </Link>
           </li>
         ))}
       </ul>
-      <PageSelector
-        href="/"
-        currentPage={page ?? 1}
-        hasNextPage={hasNextPage}
-      />
+      <PageSelector href="/" currentPage={page} hasNextPage={hasNextPage} />
     </div>
   );
 }
