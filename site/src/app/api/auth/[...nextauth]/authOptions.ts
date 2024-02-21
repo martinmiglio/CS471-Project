@@ -1,6 +1,7 @@
 import prisma from "@/lib/prisma/client";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
-import { AuthOptions } from "next-auth";
+import type { AuthOptions, RequestInternal, User } from "next-auth";
+import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
 import { z } from "zod";
 
@@ -25,26 +26,36 @@ const authOptions: AuthOptions = {
   pages: {
     signIn: "/login",
   },
-  callbacks: {
-    async session({ session }) {
-      if (
-        // process.env.VERCEL_ENV === "preview" ||
-        !env.TESTING_USER_ID ||
-        !env.TESTING_USER_EMAIL
-      ) {
-        return session;
-      }
-
-      session.user = {
-        name: "Testing",
-        email: env.TESTING_USER_EMAIL,
-      };
-
-      return session;
-    },
-  },
   debug: process.env.NODE_ENV === "development",
   secret: env.NEXTAUTH_SECRET,
 };
+
+if (
+  process.env.VERCEL_ENV === "preview" &&
+  env.TESTING_USER_ID &&
+  env.TESTING_USER_EMAIL
+) {
+  authOptions.providers.push(
+    CredentialsProvider({
+      id: "biddr",
+      name: "Testing - Biddr.pro",
+      credentials: {},
+      authorize(
+        credentials: Record<string, string> | undefined,
+        req: Pick<RequestInternal, "headers" | "body" | "query" | "method">,
+      ): User {
+        return {
+          id: env.TESTING_USER_ID ?? "",
+          name: "Testing",
+          email: env.TESTING_USER_EMAIL,
+        };
+      },
+    }),
+  );
+  authOptions.session = {
+    strategy: "jwt",
+    maxAge: 30 * 24 * 60 * 60, // 30 days
+  };
+}
 
 export default authOptions;
