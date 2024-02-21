@@ -1,3 +1,4 @@
+import PlaceBidButton from "@/components/PlaceBidButton";
 import CountDown from "@/components/ui/CountDown";
 import { Button } from "@/components/ui/button";
 import {
@@ -51,7 +52,7 @@ export default async function ListingsPage({
           </div>
         </CardContent>
         <CardFooter className="flex w-full justify-center space-x-2">
-          <Button>Place Bid</Button>
+          <PlaceBidButton />
           <Button variant="secondary">Add to Watchlist</Button>
         </CardFooter>
       </Card>
