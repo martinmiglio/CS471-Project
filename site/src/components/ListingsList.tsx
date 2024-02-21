@@ -29,7 +29,7 @@ export default async function ListingsList({
     page: query.page ?? 1,
   });
 
-  const listings = await getAllListings(page, pageSize);
+  const listings = await getAllListings({ page, pageSize });
   const hasNextPage = listings.length >= (pageSize ?? DEFAULT_PAGE_SIZE);
 
   return (
