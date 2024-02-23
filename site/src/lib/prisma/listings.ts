@@ -1,11 +1,21 @@
 import prisma from "./client";
 
-export async function getListingById(id: string) {
+export async function getListingById(id: string, includeEmail?: boolean) {
   return await prisma.listing.findUnique({
     where: { id },
     include: {
       user: {
-        select: { name: true },
+        select: { name: true, image: true, email: includeEmail },
+      },
+      bids: {
+        include: {
+          user: {
+            select: { name: true, image: true, id: true },
+          },
+        },
+        orderBy: {
+          price: "desc",
+        },
       },
     },
   });
@@ -38,7 +48,14 @@ export async function getAllListings(query: {
     },
     include: {
       user: {
-        select: { name: true },
+        select: { name: true, image: true },
+      },
+      bids: {
+        include: {
+          user: {
+            select: { name: true },
+          },
+        },
       },
     },
   });
