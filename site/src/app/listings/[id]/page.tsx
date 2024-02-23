@@ -7,6 +7,13 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
 import { getListingById } from "@/lib/prisma/listings";
 import Image from "next/image";
 import { redirect } from "next/navigation";
@@ -24,13 +31,23 @@ export default async function ListingsPage({
 
   return (
     <div className="flex w-full flex-col space-x-0 space-y-2 md:flex-row md:space-x-2 md:space-y-0">
-      <Image
-        src={listing.image}
-        alt={listing.title + " Image"}
-        className="mx-auto rounded-md object-cover"
-        width={400}
-        height={400}
-      />
+      <Carousel opts={{ loop: true }}>
+        <CarouselContent>
+          {listing.images.map((image) => (
+            <CarouselItem key={image.id}>
+              <Image
+                src={image.url}
+                alt={listing.title + " Image"}
+                className="mx-auto rounded-md object-cover"
+                width={400}
+                height={400}
+              />
+            </CarouselItem>
+          ))}
+        </CarouselContent>
+        <CarouselPrevious />
+        <CarouselNext />
+      </Carousel>
       <Card>
         <CardHeader>
           <CardTitle>
