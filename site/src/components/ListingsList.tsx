@@ -41,7 +41,7 @@ export default async function ListingsList({
               <Card>
                 <CardHeader className="flex flex-row space-x-4">
                   <Image
-                    src={listing.image}
+                    src={listing.images[0].url}
                     alt={listing.title}
                     className="rounded-md object-cover"
                     width={184}

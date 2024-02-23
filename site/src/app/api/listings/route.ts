@@ -61,7 +61,7 @@ const ListingSchema = z.object({
   title: z.string(),
   description: z.string(),
   price: z.coerce.number().nonnegative().optional(),
-  image: z.string().url(),
+  images: z.string().url().array().nonempty(),
   expiresAt: z.date().optional(),
 });
 
@@ -87,14 +87,14 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ message: "Invalid listing" }, { status: 400 });
   }
 
-  const { title, description, price, image, expiresAt } = post;
+  const { title, description, price, images, expiresAt } = post;
 
   const listing = await createListing(
     session.user.email,
     title,
     description,
     price ?? 0,
-    image,
+    images,
     expiresAt ?? new Date(Date.now() + DEFAULT_LISTING_DURATION),
   );
 
