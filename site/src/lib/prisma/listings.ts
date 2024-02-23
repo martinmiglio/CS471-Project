@@ -7,6 +7,7 @@ export async function getListingById(id: string) {
       user: {
         select: { name: true },
       },
+      images: true,
     },
   });
 }
@@ -40,6 +41,7 @@ export async function getAllListings(query: {
       user: {
         select: { name: true },
       },
+      images: true,
     },
   });
 }
@@ -49,7 +51,7 @@ export async function createListing(
   title: string,
   description: string,
   price: number,
-  image: string,
+  images: string[],
   expiresAt: Date,
 ) {
   return await prisma.listing.create({
@@ -57,12 +59,14 @@ export async function createListing(
       title,
       description,
       price,
-      image,
       expires: expiresAt,
       user: {
         connect: {
           email: userEmail,
         },
+      },
+      images: {
+        create: images.map((image) => ({ url: image })),
       },
     },
   });
