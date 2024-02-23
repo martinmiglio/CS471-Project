@@ -60,7 +60,7 @@ function NavBarDropdownContent() {
   const { resolvedTheme, setTheme } = useTheme();
 
   return (
-    <DropdownMenuContent>
+    <DropdownMenuContent side="bottom" align="end">
       <DropdownMenuItem asChild>
         <Link href="/new-listing" data-umami-event="NavBar - New Listing">
           <PlusCircle className="mr-2 h-4 w-4" />
