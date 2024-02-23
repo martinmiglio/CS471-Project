@@ -1,5 +1,6 @@
 import { DEFAULT_PAGE_SIZE } from "../consts";
 import PageSelector from "@/components/PageSelector";
+import CountDown from "@/components/ui/CountDown";
 import {
   Card,
   CardDescription,
@@ -51,14 +52,20 @@ export default async function ListingsList({
                   </div>
                   <div className="flex w-full flex-col justify-between">
                     <div className="flex flex-col space-y-2">
-                      <CardTitle>{listing.title}</CardTitle>
+                      <div className="flex justify-between">
+                        <CardTitle>{listing.title}</CardTitle>
+                        <span className="flex justify-end text-muted-foreground">
+                          {listing.user.name}
+                        </span>
+                      </div>
                       <CardDescription>{listing.description}</CardDescription>
                     </div>
                     <div className="flex justify-between">
-                      <span>${listing.price.toFixed(2)} • 0 bids</span>
-                      <span className="text-muted-foreground">
-                        {listing.user.name}
-                      </span>
+                      <span>${listing.price.toFixed(2)} • 0 bids </span>
+                      <div className="flex flex-col">
+                        <span>Auction Ends</span>
+                        <CountDown endTime={new Date(listing?.expires)} />
+                      </div>
                     </div>
                   </div>
                 </CardHeader>
