@@ -34,7 +34,7 @@ export default function Page() {
             Welcome! Sign in to continue
           </h1>
           {providers && (
-            <div className="my-3">
+            <div className="mx-auto my-3 flex min-w-64 flex-col space-y-2 px-4">
               {Object.keys(providers).map((providerName) => {
                 const provider = providers[providerName];
                 if (provider.id === "email") return null;
