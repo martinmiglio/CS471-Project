@@ -50,6 +50,11 @@ const imageURLs = [
 let new_listings: Promise<Listing>[] = [];
 
 for (let i = 0; i < count; i++) {
+  const n_images = Math.floor(Math.random() * (imageURLs.length - 1)) + 1;
+  const randomImages = imageURLs
+    .toSorted(() => Math.random() - 0.5)
+    .slice(0, n_images);
+
   new_listings.push(
     createListing(
       emails[Math.floor(Math.random() * emails.length)],
@@ -58,7 +63,7 @@ for (let i = 0; i < count; i++) {
         title_words[Math.floor(Math.random() * title_words.length)],
       descriptions[Math.floor(Math.random() * descriptions.length)],
       prices[Math.floor(Math.random() * prices.length)],
-      imageURLs[Math.floor(Math.random() * imageURLs.length)],
+      randomImages,
       new Date(
         Date.now() +
           days[Math.floor(Math.random() * days.length)] * 1000 * 60 * 60,
