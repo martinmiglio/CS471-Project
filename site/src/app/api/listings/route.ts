@@ -38,8 +38,8 @@ export async function GET(req: NextRequest) {
     const query = querySchema.parse({
       pageSize: searchParams.get("pageSize") ?? DEFAULT_PAGE_SIZE,
       page: searchParams.get("page") ?? 1,
-      orderBy: searchParams.get("orderBy"),
-      orderDirection: searchParams.get("orderDirection"),
+      orderBy: searchParams.get("orderBy") ?? undefined,
+      orderDirection: searchParams.get("orderDirection") ?? undefined,
     });
 
     const listings = await getAllListings(query);
