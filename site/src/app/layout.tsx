@@ -24,6 +24,7 @@ export const metadata: Metadata = {
   title: "Biddr.pro",
   description: "Bid More. Be Happy. Biddr.pro",
   metadataBase: new URL("https://biddr.pro"),
+  icons: { icon: "/icon?v1" },
 };
 
 export default function RootLayout({
