@@ -62,7 +62,7 @@ const ListingSchema = z.object({
   description: z.string(),
   price: z.coerce.number().nonnegative().optional(),
   images: z.string().url().array().nonempty(),
-  expiresAt: z.date().optional(),
+  expiresAt: z.coerce.date().optional(),
 });
 
 export async function POST(req: NextRequest) {

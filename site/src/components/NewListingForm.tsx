@@ -27,7 +27,7 @@ const newListingSchema = z.object({
   description: z.string().max(500),
   price: z.coerce.number().nonnegative().optional(),
   images: z.string().url().array().nonempty(),
-  expires: z.number(),
+  expiresAt: z.number(),
 });
 
 export default function NewListingForm() {
@@ -40,7 +40,7 @@ export default function NewListingForm() {
     resolver: zodResolver(newListingSchema),
     defaultValues: {
       price: 0,
-      expires: 5,
+      expiresAt: 5,
     },
   });
 
@@ -55,8 +55,8 @@ export default function NewListingForm() {
       body: JSON.stringify({
         ...newListing,
         // overwrite the number days to actual date object
-        expires: new Date(
-          new Date().getTime() + newListing.expires * 24 * 60 * 60 * 1000,
+        expiresAt: new Date(
+          new Date().getTime() + newListing.expiresAt * 24 * 60 * 60 * 1000,
         ),
       }),
     });
@@ -135,7 +135,7 @@ export default function NewListingForm() {
           />
           <FormField
             control={form.control}
-            name="expires"
+            name="expiresAt"
             render={({ field }) => (
               <FormItem className="flex flex-1 flex-col">
                 <FormLabel>Expires In</FormLabel>
