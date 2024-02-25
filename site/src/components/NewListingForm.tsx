@@ -32,7 +32,7 @@ import { z } from "zod";
 
 const newListingSchema = z.object({
   title: z.string().min(4).max(50),
-  description: z.string().max(500).optional(),
+  description: z.string().max(500),
   price: z.coerce.number().nonnegative().optional(),
   images: z.string().url().array().nonempty(),
   expires: z.date().optional(),
