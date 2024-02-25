@@ -10,8 +10,7 @@
     "lint": "next lint",
     "format": "prettier --w -l .",
     "demo:generate": "tsx --env-file=.env.local scripts/demo/generate.ts",
-    "demo:clean": "tsx --env-file=.env.local scripts/demo/clean.ts",
-    "get-latest-migration": "tsx ./prisma/getLatestMigration.ts"
+    "demo:clean": "tsx --env-file=.env.local scripts/demo/clean.ts"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.3.4",
