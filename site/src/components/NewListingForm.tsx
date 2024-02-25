@@ -42,6 +42,7 @@ export default function NewListingForm() {
   const router = useRouter();
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
+  const [imageInputLoading, setImageInputLoading] = useState(false);
 
   const form = useForm<z.infer<typeof newListingSchema>>({
     resolver: zodResolver(newListingSchema),
@@ -192,14 +193,23 @@ export default function NewListingForm() {
             <FormItem>
               <FormLabel>Image</FormLabel>
               <FormControl>
-                <ImageInput {...field} />
+                <ImageInput
+                  {...field}
+                  multiple={true}
+                  setLoading={setImageInputLoading}
+                  disabled={imageInputLoading}
+                />
               </FormControl>
               <FormDescription>The image of your listing.</FormDescription>
               <FormMessage />
             </FormItem>
           )}
         />
-        <Button className="w-full" type="submit" disabled={loading}>
+        <Button
+          className="w-full"
+          type="submit"
+          disabled={loading || imageInputLoading}
+        >
           {loading ? "Submitting..." : "Create Listing"}
         </Button>
       </form>

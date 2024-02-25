@@ -5,15 +5,22 @@ import { useS3Upload } from "next-s3-upload";
 import { useState } from "react";
 
 export interface InputProps
-  extends React.InputHTMLAttributes<HTMLInputElement> {}
+  extends React.InputHTMLAttributes<HTMLInputElement> {
+  setLoading?: (isLoading: boolean) => void;
+}
 
-export default function ImageUploader({ onChange }: Readonly<InputProps>) {
+export default function ImageUploader({
+  onChange,
+  setLoading,
+  ...props
+}: Readonly<InputProps>) {
   const { uploadToS3 } = useS3Upload();
   const [file, setFile] = useState<File | null>(null);
 
   const handleFileChange = async (
     event: React.ChangeEvent<HTMLInputElement>,
   ) => {
+    setLoading?.(true);
     if (!event.target.files) {
       return;
     }
@@ -32,6 +39,7 @@ export default function ImageUploader({ onChange }: Readonly<InputProps>) {
         value: url,
       },
     } as any);
+    setLoading?.(false);
   };
 
   return (
