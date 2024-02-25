@@ -62,7 +62,7 @@ export default async function ListingsList({
                     </div>
                     <div className="flex justify-between">
                       <span>${listing.price.toFixed(2)} • 0 bids </span>
-                      <div className="flex flex-col">
+                      <div className="flex flex-col text-right">
                         <span>Auction Ends</span>
                         <CountDown endTime={new Date(listing?.expires)} />
                       </div>
