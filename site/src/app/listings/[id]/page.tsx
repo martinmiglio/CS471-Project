@@ -41,21 +41,26 @@ export default async function ListingsPage({
     <div className="flex flex-col space-y-2">
       <div className="flex w-full flex-col space-x-0 space-y-2 md:flex-row md:space-x-2 md:space-y-0">
         <Carousel opts={{ loop: true }}>
-          <CarouselContent>
+          <CarouselContent className="h-[400px] w-[400px]">
             {listing.images.map((image) => (
               <CarouselItem key={image.id}>
                 <Image
                   src={image.url}
                   alt={listing.title + " Image"}
-                  className="mx-auto rounded-md object-cover"
+                  quality={100}
+                  className="h-full w-full rounded-md bg-popover object-cover"
                   width={400}
                   height={400}
                 />
               </CarouselItem>
             ))}
           </CarouselContent>
-          <CarouselPrevious />
-          <CarouselNext />
+          {listing.images.length > 1 && (
+            <>
+              <CarouselPrevious className="bottom-2 left-2 top-[none] translate-y-[none] bg-card/40 backdrop-blur-sm backdrop-filter" />
+              <CarouselNext className="bottom-2 right-2 top-[none] translate-y-[none] bg-card/40 backdrop-blur-sm backdrop-filter" />
+            </>
+          )}
         </Carousel>
         <Card>
           <CardHeader>
