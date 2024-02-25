@@ -14,6 +14,11 @@ export default function ImageUploader({
   setLoading,
   ...props
 }: Readonly<InputProps>) {
+  const managedProps = {
+    ...props,
+    value: undefined,
+  };
+
   const { uploadToS3 } = useS3Upload();
   const [files, setFiles] = useState<File[]>([]);
 
@@ -55,7 +60,7 @@ export default function ImageUploader({
       accept=".jpg,.jpeg,.png"
       data-umami-event="Image Upload"
       data-umami-event-file-name={files.map((file) => file.name + ";")}
-      {...props}
+      {...managedProps}
     />
   );
 }
