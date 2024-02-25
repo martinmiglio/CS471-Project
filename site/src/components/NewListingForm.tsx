@@ -24,9 +24,9 @@ import { z } from "zod";
 
 const newListingSchema = z.object({
   title: z.string().min(4).max(50),
-  description: z.string().max(500).optional(),
+  description: z.string().max(500),
   price: z.coerce.number().nonnegative().optional(),
-  image: z.string().url(),
+  images: z.string().url().array().nonempty(),
   expires: z.number(),
 });
 
@@ -151,10 +151,10 @@ export default function NewListingForm() {
         </div>
         <FormField
           control={form.control}
-          name="image"
+          name="images"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Image</FormLabel>
+              <FormLabel>Images</FormLabel>
               <FormControl>
                 <ImageInput
                   {...field}
@@ -163,7 +163,7 @@ export default function NewListingForm() {
                   disabled={imageInputLoading}
                 />
               </FormControl>
-              <FormDescription>The image of your listing.</FormDescription>
+              <FormDescription>The image(s) of your listing.</FormDescription>
               <FormMessage />
             </FormItem>
           )}

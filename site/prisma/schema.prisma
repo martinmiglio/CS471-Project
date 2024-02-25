@@ -59,17 +59,25 @@ model User {
 }
 
 model Listing {
-    id          String   @id @default(cuid())
+    id          String         @id @default(cuid())
     title       String
     description String
     price       Float
-    image       String
+    images      ListingImage[]
     userId      String
-    status      String   @default("active")
+    status      String         @default("active")
     expires     DateTime
-    createdAt   DateTime @default(now())
-    user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+    createdAt   DateTime       @default(now())
+    user        User           @relation(fields: [userId], references: [id], onDelete: Cascade)
     bids        Bid[]
+}
+
+model ListingImage {
+    id        String  @id @default(cuid())
+    url       String
+    caption   String?
+    listingId String
+    listing   Listing @relation(fields: [listingId], references: [id], onDelete: Cascade)
 }
 
 model Bid {

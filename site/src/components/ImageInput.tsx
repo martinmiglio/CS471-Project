@@ -14,29 +14,39 @@ export default function ImageUploader({
   setLoading,
   ...props
 }: Readonly<InputProps>) {
+  const managedProps = {
+    ...props,
+    value: undefined,
+  };
+
   const { uploadToS3 } = useS3Upload();
-  const [file, setFile] = useState<File | null>(null);
+  const [files, setFiles] = useState<File[]>([]);
 
   const handleFileChange = async (
     event: React.ChangeEvent<HTMLInputElement>,
   ) => {
     setLoading?.(true);
-    if (!event.target.files) {
+    if (!event.target.files?.[0]) {
       return;
     }
+    const files = Array.from(event.target.files);
+    setFiles(files);
 
-    if (!event.target.files[0]) {
-      return;
+    const uploadPromises: ReturnType<typeof uploadToS3>[] = [];
+
+    for (let file of files) {
+      uploadPromises.push(uploadToS3(file));
     }
 
-    setFile(event.target.files[0]);
+    const uploads = await Promise.all(uploadPromises);
 
-    const { key } = await uploadToS3(event.target.files[0]);
-    const url = `https://${process.env.NEXT_PUBLIC_CDN_DOMAIN}/${key}`;
+    const urls = uploads.map(
+      ({ key }) => `https://${process.env.NEXT_PUBLIC_CDN_DOMAIN}/${key}`,
+    );
 
     onChange?.({
       target: {
-        value: url,
+        value: urls,
       },
     } as any);
     setLoading?.(false);
@@ -49,7 +59,8 @@ export default function ImageUploader({
       onChange={handleFileChange}
       accept=".jpg,.jpeg,.png"
       data-umami-event="Image Upload"
-      data-umami-event-file-name={file?.name}
+      data-umami-event-file-name={files.map((file) => file.name + ";")}
+      {...managedProps}
     />
   );
 }

@@ -40,13 +40,15 @@ export default async function ListingsList({
             <Link href={`/listings/${listing.id}`}>
               <Card>
                 <CardHeader className="flex flex-row space-x-4">
-                  <Image
-                    src={listing.image}
-                    alt={listing.title}
-                    className="rounded-md object-cover"
-                    width={184}
-                    height={184}
-                  />
+                  <div className="h-[184px] w-[184px] flex-shrink-0">
+                    <Image
+                      src={listing.images[0].url}
+                      alt={listing.title}
+                      className="h-full w-full rounded-md bg-popover object-cover"
+                      width={184}
+                      height={184}
+                    />
+                  </div>
                   <div className="flex w-full flex-col justify-between">
                     <div className="flex flex-col space-y-2">
                       <CardTitle>{listing.title}</CardTitle>
