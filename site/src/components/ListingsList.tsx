@@ -69,7 +69,7 @@ export default async function ListingsList({
           <li key={listing.id}>
             <Link href={`/listings/${listing.id}`}>
               <Card>
-                <CardHeader className="flex flex-row space-x-4">
+                <CardHeader className="flex flex-row space-x-4 p-4">
                   <div className="h-[184px] w-[184px] flex-shrink-0">
                     <Image
                       src={listing.images[0].url}
