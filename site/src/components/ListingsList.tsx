@@ -55,7 +55,10 @@ export default async function ListingsList({
                       <CardDescription>{listing.description}</CardDescription>
                     </div>
                     <div className="flex justify-between">
-                      <span>${listing.price.toFixed(2)} • 0 bids</span>
+                      <span>
+                        ${listing.price.toFixed(2)} • {listing.bids.length} bid
+                        {listing.bids.length === 1 ? "" : "s"}
+                      </span>
                       <span className="text-muted-foreground">
                         {listing.user.name}
                       </span>
