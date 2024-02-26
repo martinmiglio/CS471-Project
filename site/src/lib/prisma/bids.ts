@@ -5,11 +5,18 @@ export async function placeNewBid(
   userEmail: string,
   price: number,
 ) {
-  return await prisma.bid.create({
+  const res = await prisma.bid.create({
     data: {
       price,
       listing: { connect: { id: listingId } },
       user: { connect: { email: userEmail } },
     },
   });
+
+  await prisma.listing.update({
+    where: { id: listingId },
+    data: { price },
+  });
+
+  return res;
 }
