@@ -6,10 +6,18 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { getAllListings } from "@/lib/prisma/listings";
+import { ORDER, ORDER_BY, ACTIVE, getAllListings } from "@/lib/prisma/listings";
 import Image from "next/image";
 import Link from "next/link";
 import { z } from "zod";
+
+export const querySchema = z.object({
+  pageSize: z.coerce.number(),
+  page: z.coerce.number(),
+  active: z.enum(ACTIVE).optional(),
+  orderBy: z.enum(ORDER_BY).optional(),
+  order: z.enum(ORDER).optional(),
+});
 
 export default async function ListingsList({
   query,
@@ -17,19 +25,37 @@ export default async function ListingsList({
   query: {
     page?: string;
     pageSize?: string;
+    active?: string;
+    orderBy?: string;
+    order?: string;
   };
 }>) {
-  const querySchema = z.object({
-    pageSize: z.coerce.number(),
-    page: z.coerce.number(),
+  const defaultQuery = {
+    pageSize: DEFAULT_PAGE_SIZE,
+    page: 1,
+  };
+
+  const res = querySchema.safeParse({
+    ...defaultQuery,
+    ...query,
   });
 
-  const { page, pageSize } = querySchema.parse({
-    pageSize: query.pageSize ?? DEFAULT_PAGE_SIZE,
-    page: query.page ?? 1,
-  });
+  let listings: Awaited<ReturnType<typeof getAllListings>> | null[] = [];
+  let parsedQuery: z.infer<typeof querySchema> | undefined = defaultQuery;
 
-  const listings = await getAllListings({ page, pageSize });
+  if (res.success) {
+    console.log(JSON.stringify({ sentQuery: res.data }, null, 2));
+    listings = await getAllListings(res.data);
+    parsedQuery = res.data;
+  } else {
+    listings = await getAllListings({
+      page: 1,
+      pageSize: DEFAULT_PAGE_SIZE,
+    });
+  }
+
+  const { page, pageSize } = parsedQuery;
+
   const hasNextPage = listings.length >= (pageSize ?? DEFAULT_PAGE_SIZE);
 
   return (
@@ -70,7 +96,12 @@ export default async function ListingsList({
           </li>
         ))}
       </ul>
-      <PageSelector href="/" currentPage={page} hasNextPage={hasNextPage} />
+      <PageSelector
+        href="/"
+        currentPage={page}
+        hasNextPage={hasNextPage}
+        query={query}
+      />
     </div>
   );
 }
