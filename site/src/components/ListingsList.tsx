@@ -1,4 +1,5 @@
 import { DEFAULT_PAGE_SIZE } from "../consts";
+import ListingsFilter from "@/components/ListingsFilter";
 import PageSelector from "@/components/PageSelector";
 import {
   Card,
@@ -60,6 +61,9 @@ export default async function ListingsList({
 
   return (
     <div className="flex flex-col space-y-2">
+      <div className="flex w-full justify-end">
+        <ListingsFilter query={parsedQuery} />
+      </div>
       <ul className="flex flex-col space-y-2">
         {listings.map((listing) => (
           <li key={listing.id}>
