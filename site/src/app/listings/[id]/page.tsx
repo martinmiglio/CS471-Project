@@ -40,7 +40,7 @@ export default async function ListingsPage({
   return (
     <div className="flex flex-col space-y-2">
       <div className="flex w-full flex-col space-x-0 space-y-2 md:flex-row md:space-x-2 md:space-y-0">
-        <Carousel opts={{ loop: true }}>
+        <Carousel opts={{ loop: true }} className="mx-auto md:mx-0">
           <CarouselContent className="h-[400px] w-[400px]">
             {listing.images.map((image) => (
               <CarouselItem key={image.id}>
@@ -62,7 +62,7 @@ export default async function ListingsPage({
             </>
           )}
         </Carousel>
-        <Card>
+        <Card className="flex-grow">
           <CardHeader>
             <CardTitle>
               {listing.title}
