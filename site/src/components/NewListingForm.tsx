@@ -1,8 +1,8 @@
 "use client";
 
+import ExpirationDatePicker from "@/components/ExpirationDatePicker";
 import ImageInput from "@/components/ImageInput";
 import { Button } from "@/components/ui/button";
-import { Calendar } from "@/components/ui/calendar";
 import {
   Form,
   FormControl,
@@ -13,18 +13,10 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/components/ui/use-toast";
 import { type createListing } from "@/lib/prisma/listings";
-import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { format } from "date-fns";
-import { CalendarIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -35,30 +27,38 @@ const newListingSchema = z.object({
   description: z.string().max(500),
   price: z.coerce.number().nonnegative().optional(),
   images: z.string().url().array().nonempty(),
-  expires: z.date().optional(),
+  expiresAt: z.number(),
 });
 
 export default function NewListingForm() {
   const router = useRouter();
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
+  const [imageInputLoading, setImageInputLoading] = useState(false);
 
   const form = useForm<z.infer<typeof newListingSchema>>({
     resolver: zodResolver(newListingSchema),
     defaultValues: {
       price: 0,
-      expires: new Date(new Date().getTime() + 7 * 24 * 60 * 60 * 1000),
+      expiresAt: 5,
     },
   });
 
   const onSubmit = async (newListing: z.infer<typeof newListingSchema>) => {
     setLoading(true);
+
     const res = await fetch("/api/listings", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(newListing),
+      body: JSON.stringify({
+        ...newListing,
+        // overwrite the number days to actual date object
+        expiresAt: new Date(
+          new Date().getTime() + newListing.expiresAt * 24 * 60 * 60 * 1000,
+        ),
+      }),
     });
 
     if (res.ok) {
@@ -135,51 +135,15 @@ export default function NewListingForm() {
           />
           <FormField
             control={form.control}
-            name="expires"
+            name="expiresAt"
             render={({ field }) => (
               <FormItem className="flex flex-1 flex-col">
-                <FormLabel>Expires At</FormLabel>
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <FormControl>
-                      <Button
-                        variant={"outline"}
-                        className={cn(
-                          "w-full pl-3 text-left font-normal",
-                          !field.value && "text-muted-foreground",
-                        )}
-                      >
-                        {field.value ? (
-                          format(field.value, "PPP")
-                        ) : (
-                          <span>Pick a date</span>
-                        )}
-                        <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                      </Button>
-                    </FormControl>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0" align="start">
-                    <Calendar
-                      mode="single"
-                      selected={field.value}
-                      onSelect={field.onChange}
-                      disabled={(date) =>
-                        date <
-                          new Date(
-                            new Date().getTime() + 24 * 60 * 60 * 1000,
-                          ) ||
-                        date >
-                          new Date(
-                            new Date().getTime() + 30 * 24 * 60 * 60 * 1000,
-                          )
-                      }
-                      initialFocus
-                    />
-                  </PopoverContent>
-                </Popover>
-                <FormDescription>
-                  The expiration date of your listing.
-                </FormDescription>
+                <FormLabel>Expires In</FormLabel>
+                <ExpirationDatePicker
+                  selected={field.value}
+                  onSelect={field.onChange}
+                />
+                <FormDescription>The duration of your listing.</FormDescription>
                 <FormMessage />
               </FormItem>
             )}
@@ -192,14 +156,23 @@ export default function NewListingForm() {
             <FormItem>
               <FormLabel>Images</FormLabel>
               <FormControl>
-                <ImageInput {...field} multiple={true} />
+                <ImageInput
+                  {...field}
+                  multiple={true}
+                  setLoading={setImageInputLoading}
+                  disabled={imageInputLoading}
+                />
               </FormControl>
               <FormDescription>The image(s) of your listing.</FormDescription>
               <FormMessage />
             </FormItem>
           )}
         />
-        <Button className="w-full" type="submit" disabled={loading}>
+        <Button
+          className="w-full"
+          type="submit"
+          disabled={loading || imageInputLoading}
+        >
           {loading ? "Submitting..." : "Create Listing"}
         </Button>
       </form>
