@@ -11,15 +11,19 @@ export default function PageSelector({
   href,
   currentPage,
   hasNextPage,
+  query
 }: Readonly<{
   href: string;
   currentPage: number;
   hasNextPage: boolean;
+  query?: Record<string, string>;
 }>) {
   const prevPageQuery = new URLSearchParams({
+    ...query,
     page: (currentPage - 1).toString(),
   }).toString();
   const nextPageQuery = new URLSearchParams({
+    ...query,
     page: (currentPage + 1).toString(),
   }).toString();
   return (
