@@ -62,8 +62,9 @@ const filters: Record<
   },
 };
 
-const valueMap = (arr: { value: string }[]) =>
-  arr.map((filter) => filter.value) as [string, ...string[]];
+function valueMap(arr: { value: string }[]) {
+  return arr.map((filter) => filter.value) as [string, ...string[]];
+}
 
 const filterSchema = z.object({
   order: z.enum(valueMap(filters.order.values)),
@@ -72,10 +73,12 @@ const filterSchema = z.object({
 });
 
 export interface ListingFilterProps {
+  href: string;
   query: z.infer<typeof querySchema>;
 }
 
 export default function ListingFilter({
+  href,
   query,
   ...props
 }: Readonly<ListingFilterProps>) {
@@ -116,7 +119,7 @@ export default function ListingFilter({
         2,
       ),
     );
-    router.push("/?" + newQuery.toString());
+    router.push(href + "?" + newQuery.toString());
   };
 
   const resetFilter = () => {
@@ -126,7 +129,7 @@ export default function ListingFilter({
       page: stringQuery.page,
       pageSize: stringQuery.pageSize,
     });
-    router.push("/?" + newQuery.toString());
+    router.push(href + "?" + newQuery.toString());
   };
 
   const onSubmit = (filters: z.infer<typeof filterSchema>) => {

@@ -22,8 +22,10 @@ export const querySchema = z.object({
 });
 
 export default async function ListingsList({
+  href,
   query,
 }: Readonly<{
+  href: string;
   query: {
     page?: string;
     pageSize?: string;
@@ -63,7 +65,7 @@ export default async function ListingsList({
   return (
     <div className="flex flex-col space-y-2">
       <div className="flex w-full justify-end">
-        <ListingsFilter query={parsedQuery} />
+        <ListingsFilter href={href} query={parsedQuery} />
       </div>
       <ul className="flex flex-col space-y-2">
         {listings.map((listing) => (
@@ -108,7 +110,7 @@ export default async function ListingsList({
         ))}
       </ul>
       <PageSelector
-        href="/"
+        href={href}
         currentPage={page}
         hasNextPage={hasNextPage}
         query={query}
