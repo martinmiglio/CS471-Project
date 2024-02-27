@@ -8,6 +8,9 @@ on:
       - site/prisma/migrations/**
   workflow_dispatch:
 
+env:
+  TURSO_API_TOKEN: ${{ secrets.TURSO_API_TOKEN }}
+
 jobs:
   migrate-db:
     runs-on: ubuntu-latest
@@ -33,11 +36,6 @@ jobs:
           TURSO_INSTALL_SKIP_SIGNUP: 1
         run: |
           curl -sSfL https://get.tur.so/install.sh | bash;
-      - name: Sign in to Turso
-        continue-on-error: true
-        run: |
-          export TURSO_API_TOKEN="${{ secrets.TURSO_API_TOKEN }}";
-          ~/.turso/turso auth whoami
       - name: Apply Migration to Database
         run: |
           cd site;
