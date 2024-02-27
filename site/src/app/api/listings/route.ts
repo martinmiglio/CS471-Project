@@ -38,8 +38,8 @@ export async function GET(req: NextRequest) {
     const query = querySchema.parse({
       pageSize: searchParams.get("pageSize") ?? DEFAULT_PAGE_SIZE,
       page: searchParams.get("page") ?? 1,
-      orderBy: searchParams.get("orderBy"),
-      orderDirection: searchParams.get("orderDirection"),
+      orderBy: searchParams.get("orderBy") ?? undefined,
+      orderDirection: searchParams.get("orderDirection") ?? undefined,
     });
 
     const listings = await getAllListings(query);
@@ -61,8 +61,8 @@ const ListingSchema = z.object({
   title: z.string(),
   description: z.string(),
   price: z.coerce.number().nonnegative().optional(),
-  image: z.string().url(),
-  expiresAt: z.date().optional(),
+  images: z.string().url().array().nonempty(),
+  expiresAt: z.coerce.date().optional(),
 });
 
 export async function POST(req: NextRequest) {
@@ -87,14 +87,14 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ message: "Invalid listing" }, { status: 400 });
   }
 
-  const { title, description, price, image, expiresAt } = post;
+  const { title, description, price, images, expiresAt } = post;
 
   const listing = await createListing(
     session.user.email,
     title,
     description,
     price ?? 0,
-    image,
+    images,
     expiresAt ?? new Date(Date.now() + DEFAULT_LISTING_DURATION),
   );
 
