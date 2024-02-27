@@ -14,7 +14,7 @@ export default async function Page({
   const session = await getServerSession(authOptions);
 
   if (session) {
-    return <ListingsList query={searchParams} />;
+    return <ListingsList query={searchParams} href="/" />;
   }
 
   return (
