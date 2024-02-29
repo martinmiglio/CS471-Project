@@ -1,4 +1,5 @@
 import prisma from "./client";
+import { Listing } from "@prisma/client";
 
 export async function getListingById(id: string, includeEmail?: boolean) {
   return await prisma.listing.findUnique({
@@ -103,4 +104,17 @@ export async function createListing(
       },
     },
   });
+}
+
+export async function searchListings(searchPhrase: string) {
+  return await prisma.$queryRaw<Listing[]>`
+      SELECT * FROM Listing
+      WHERE rowid IN (
+          SELECT rowid FROM Listing_fts
+          WHERE title MATCH ${searchPhrase}
+          UNION
+          SELECT rowid FROM Listing_fts
+          WHERE description MATCH ${searchPhrase}
+      )
+    `;
 }
