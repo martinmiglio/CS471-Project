@@ -11,7 +11,7 @@ export default function PageSelector({
   href,
   currentPage,
   hasNextPage,
-  query
+  query,
 }: Readonly<{
   href: string;
   currentPage: number;

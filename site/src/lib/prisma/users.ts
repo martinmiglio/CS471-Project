@@ -5,7 +5,11 @@ export async function getUser(id: string) {
     where: { id },
     include: {
       listings: true,
-      bids: true,
+      bids: {
+        include: {
+          listing: true,
+        },
+      },
     },
   });
 }
@@ -15,11 +19,6 @@ export async function getUserByEmail(email: string) {
     where: { email },
     include: {
       listings: true,
-      bids: {
-        include: {
-          listing: true,
-        },
-      },
     },
   });
 }
