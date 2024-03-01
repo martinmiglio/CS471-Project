@@ -15,7 +15,11 @@ export async function getUserByEmail(email: string) {
     where: { email },
     include: {
       listings: true,
-      bids: true,
+      bids: {
+        include: {
+          listing: true,
+        },
+      },
     },
   });
 }
