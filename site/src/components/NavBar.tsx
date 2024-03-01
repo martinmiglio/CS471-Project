@@ -6,10 +6,10 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { LogOut, Moon, Sun, UserRound, PlusCircle } from "lucide-react";
+import { Session } from "next-auth";
 import { signIn, signOut, useSession } from "next-auth/react";
 import { useTheme } from "next-themes";
 import Link from "next/link";
@@ -40,7 +40,7 @@ export default function NavBar() {
               )}
             </Avatar>
           </DropdownMenuTrigger>
-          <NavBarDropdownContent />
+          <NavBarDropdownContent session={session} />
         </DropdownMenu>
       ) : (
         <Button
@@ -56,7 +56,7 @@ export default function NavBar() {
   );
 }
 
-function NavBarDropdownContent() {
+function NavBarDropdownContent({ session }: Readonly<{ session: Session }>) {
   const { resolvedTheme, setTheme } = useTheme();
 
   return (
@@ -67,7 +67,15 @@ function NavBarDropdownContent() {
           <span>Create new listing</span>
         </Link>
       </DropdownMenuItem>
-      <DropdownMenuSeparator />
+      <DropdownMenuItem asChild>
+        <Link
+          href={`/users/${session?.user?.email}`}
+          data-umami-event="NavBar - New Listing"
+        >
+          <UserRound className="mr-2 h-4 w-4" />
+          <span>My profile</span>
+        </Link>
+      </DropdownMenuItem>
       <DropdownMenuItem
         onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
         data-umami-event="NavBar - Toggle Dark Mode"
@@ -84,7 +92,6 @@ function NavBarDropdownContent() {
           </>
         )}
       </DropdownMenuItem>
-      <DropdownMenuSeparator />
       <DropdownMenuItem
         onClick={() => signOut({ callbackUrl: "/" })}
         data-umami-event="NavBar - Sign Out"
