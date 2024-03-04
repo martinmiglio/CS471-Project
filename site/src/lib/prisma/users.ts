@@ -7,7 +7,7 @@ export async function getUser(id: string) {
       listings: true,
       bids: {
         include: {
-          listing: true,
+          listing: { include: { images: true } },
         },
       },
     },
