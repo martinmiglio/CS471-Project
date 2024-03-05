@@ -26,7 +26,7 @@ export default function WatchListButton({
         action: (
           <ToastAction
             altText="See watchlist"
-            onClick={() => router.push("/watchlist")}
+            onClick={() => router.push("/watch-list")}
           >
             See watchlist
           </ToastAction>
