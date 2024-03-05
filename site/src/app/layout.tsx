@@ -5,6 +5,7 @@ import { cn } from "@/lib/utils";
 import "@/styles/globals.css";
 import type { Metadata } from "next";
 import { Gabarito as FontSans } from "next/font/google";
+import { cookies } from "next/headers";
 import Script from "next/script";
 import { z } from "zod";
 
@@ -20,11 +21,16 @@ const schema = z.object({
 });
 const env = schema.parse(process.env);
 
-export const metadata: Metadata = {
-  title: "Biddr.pro",
-  description: "Bid More. Be Happy. Biddr.pro",
-  metadataBase: new URL("https://biddr.pro"),
-};
+export async function generateMetadata() {
+  const theme = cookies().get("theme")?.value ?? "light";
+
+  return {
+    title: "Biddr.pro",
+    description: "Bid More. Be Happy. Biddr.pro",
+    metadataBase: new URL("https://biddr.pro"),
+    icons: { icon: `/icon?v1&${theme}` },
+  } satisfies Metadata;
+}
 
 export default function RootLayout({
   children,

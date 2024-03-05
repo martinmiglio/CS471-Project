@@ -8,6 +8,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useTheme } from "@/hooks/useTheme";
 import {
   LogOut,
   Moon,
@@ -18,7 +19,6 @@ import {
 } from "lucide-react";
 import { Session } from "next-auth";
 import { signIn, signOut, useSession } from "next-auth/react";
-import { useTheme } from "next-themes";
 import Link from "next/link";
 
 export default function NavBar() {
