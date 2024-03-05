@@ -10,6 +10,7 @@ export const getWatchList = async (email: string) => {
             select: { name: true, image: true },
           },
           images: true,
+          bids: true,
         },
       },
     },
