@@ -1,7 +1,7 @@
 import BidHistory from "@/components/BidHistory";
 import PlaceBidButton from "@/components/PlaceBidButton";
+import WatchListButton from "@/components/WatchListButton";
 import CountDown from "@/components/ui/CountDown";
-import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -86,7 +86,7 @@ export default async function ListingsPage({
           </CardContent>
           <CardFooter className="flex w-full justify-center space-x-2">
             <PlaceBidButton listing={listing} />
-            <Button variant="secondary">Add to Watchlist</Button>
+            <WatchListButton listingId={listing.id} />
           </CardFooter>
         </Card>
       </div>
