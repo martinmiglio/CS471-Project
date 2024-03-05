@@ -16,6 +16,7 @@ import {
   PlusCircle,
   ScanEye,
 } from "lucide-react";
+import { Session } from "next-auth";
 import { signIn, signOut, useSession } from "next-auth/react";
 import { useTheme } from "next-themes";
 import Link from "next/link";
@@ -46,7 +47,7 @@ export default function NavBar() {
               )}
             </Avatar>
           </DropdownMenuTrigger>
-          <NavBarDropdownContent />
+          <NavBarDropdownContent session={session} />
         </DropdownMenu>
       ) : (
         <Button
@@ -62,7 +63,7 @@ export default function NavBar() {
   );
 }
 
-function NavBarDropdownContent() {
+function NavBarDropdownContent({ session }: Readonly<{ session: Session }>) {
   const { resolvedTheme, setTheme } = useTheme();
 
   return (
@@ -74,6 +75,13 @@ function NavBarDropdownContent() {
         </Link>
       </DropdownMenuItem>
       <DropdownMenuItem asChild>
+        <Link
+          href={`/users/${session?.user?.email}`}
+          data-umami-event="NavBar - New Listing"
+        >
+          <UserRound className="mr-2 h-4 w-4" />
+          <span>My profile</span>
+        </Link>
         <Link href="/watch-list" data-umami-event="NavBar - Watched Listings">
           <ScanEye className="mr-2 h-4 w-4" />
           <span>Watched Listings</span>

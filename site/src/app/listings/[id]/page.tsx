@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/carousel";
 import { getListingById } from "@/lib/prisma/listings";
 import Image from "next/image";
+import Link from "next/link";
 import { redirect } from "next/navigation";
 
 export default async function ListingsPage({
@@ -66,9 +67,11 @@ export default async function ListingsPage({
           <CardHeader>
             <CardTitle>
               {listing.title}
-              <div className="text-sm text-muted-foreground">
-                {listing.user.name}
-              </div>
+              <Link href={`/users/${listing.user.id}`}>
+                <div className="text-sm text-muted-foreground hover:underline">
+                  {listing.user.name}
+                </div>
+              </Link>
             </CardTitle>
           </CardHeader>
           <CardContent>
