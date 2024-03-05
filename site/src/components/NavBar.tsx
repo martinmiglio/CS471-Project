@@ -82,6 +82,8 @@ function NavBarDropdownContent({ session }: Readonly<{ session: Session }>) {
           <UserRound className="mr-2 h-4 w-4" />
           <span>My profile</span>
         </Link>
+      </DropdownMenuItem>
+      <DropdownMenuItem asChild>
         <Link href="/watch-list" data-umami-event="NavBar - Watched Listings">
           <ScanEye className="mr-2 h-4 w-4" />
           <span>Watched Listings</span>
