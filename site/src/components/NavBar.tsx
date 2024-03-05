@@ -8,7 +8,14 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { LogOut, Moon, Sun, UserRound, PlusCircle } from "lucide-react";
+import {
+  LogOut,
+  Moon,
+  Sun,
+  UserRound,
+  PlusCircle,
+  ScanEye,
+} from "lucide-react";
 import { Session } from "next-auth";
 import { signIn, signOut, useSession } from "next-auth/react";
 import { useTheme } from "next-themes";
@@ -74,6 +81,10 @@ function NavBarDropdownContent({ session }: Readonly<{ session: Session }>) {
         >
           <UserRound className="mr-2 h-4 w-4" />
           <span>My profile</span>
+        </Link>
+        <Link href="/watch-list" data-umami-event="NavBar - Watched Listings">
+          <ScanEye className="mr-2 h-4 w-4" />
+          <span>Watched Listings</span>
         </Link>
       </DropdownMenuItem>
       <DropdownMenuItem
