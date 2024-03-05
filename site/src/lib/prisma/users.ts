@@ -22,3 +22,10 @@ export async function getUserByEmail(email: string) {
     },
   });
 }
+
+export async function updateUser(email: string, data: { bio: string | null }) {
+  return await prisma.user.update({
+    where: { email },
+    data,
+  });
+}
