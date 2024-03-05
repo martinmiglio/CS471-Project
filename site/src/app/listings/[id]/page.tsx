@@ -1,7 +1,7 @@
 import BidHistory from "@/components/BidHistory";
 import PlaceBidButton from "@/components/PlaceBidButton";
+import WatchListButton from "@/components/WatchListButton";
 import CountDown from "@/components/ui/CountDown";
-import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/carousel";
 import { getListingById } from "@/lib/prisma/listings";
 import Image from "next/image";
+import Link from "next/link";
 import { redirect } from "next/navigation";
 
 export default async function ListingsPage({
@@ -40,7 +41,7 @@ export default async function ListingsPage({
   return (
     <div className="flex flex-col space-y-2">
       <div className="flex w-full flex-col space-x-0 space-y-2 md:flex-row md:space-x-2 md:space-y-0">
-        <Carousel opts={{ loop: true }}>
+        <Carousel opts={{ loop: true }} className="mx-auto md:mx-0">
           <CarouselContent className="h-[400px] w-[400px]">
             {listing.images.map((image) => (
               <CarouselItem key={image.id}>
@@ -62,13 +63,15 @@ export default async function ListingsPage({
             </>
           )}
         </Carousel>
-        <Card>
+        <Card className="flex-grow">
           <CardHeader>
             <CardTitle>
               {listing.title}
-              <div className="text-sm text-muted-foreground">
-                {listing.user.name}
-              </div>
+              <Link href={`/users/${listing.user.id}`}>
+                <div className="text-sm text-muted-foreground hover:underline">
+                  {listing.user.name}
+                </div>
+              </Link>
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -86,7 +89,7 @@ export default async function ListingsPage({
           </CardContent>
           <CardFooter className="flex w-full justify-center space-x-2">
             <PlaceBidButton listing={listing} />
-            <Button variant="secondary">Add to Watchlist</Button>
+            <WatchListButton listingId={listing.id} />
           </CardFooter>
         </Card>
       </div>

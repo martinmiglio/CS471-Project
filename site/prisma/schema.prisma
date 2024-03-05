@@ -47,15 +47,17 @@ model VerificationToken {
 }
 
 model User {
-    id            String    @id @default(cuid())
-    name          String?
-    email         String?   @unique
-    emailVerified DateTime?
-    image         String?
-    accounts      Account[]
-    sessions      Session[]
-    listings      Listing[]
-    bids          Bid[]
+    id              String    @id @default(cuid())
+    name            String?
+    email           String?   @unique
+    emailVerified   DateTime?
+    image           String?
+    bio             String?
+    accounts        Account[]
+    sessions        Session[]
+    listings        Listing[] @relation("Lister")
+    bids            Bid[]
+    watchedListings Listing[] @relation("Watchers")
 }
 
 model Listing {
@@ -68,8 +70,9 @@ model Listing {
     status      String         @default("active")
     expires     DateTime
     createdAt   DateTime       @default(now())
-    user        User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+    user        User           @relation(name: "Lister", fields: [userId], references: [id], onDelete: Cascade)
     bids        Bid[]
+    watchers    User[]         @relation(name: "Watchers")
 }
 
 model ListingImage {

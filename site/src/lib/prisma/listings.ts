@@ -5,7 +5,7 @@ export async function getListingById(id: string, includeEmail?: boolean) {
     where: { id },
     include: {
       user: {
-        select: { name: true, image: true, email: includeEmail },
+        select: { id: true, name: true, image: true, email: includeEmail },
       },
       bids: {
         include: {
@@ -22,31 +22,49 @@ export async function getListingById(id: string, includeEmail?: boolean) {
   });
 }
 
-export async function getAllListings(query: {
+export const ACTIVE = ["active", "all"] as const;
+export const ORDER_BY = ["createdAt", "expires", "price", "bids"] as const;
+export const ORDER = ["asc", "desc"] as const;
+
+export type ListingsQuery = {
   page: number;
   pageSize: number;
-  active?: boolean;
-  orderBy?: "createdAt" | "expires" | "price";
-  orderDirection?: "asc" | "desc";
-}) {
-  const queryDefaults = {
-    active: true,
-    orderBy: "expires",
-    orderDirection: "desc",
+  active?: (typeof ACTIVE)[number];
+  orderBy?: (typeof ORDER_BY)[number];
+  order?: (typeof ORDER)[number];
+  user?: string;
+};
+
+export async function getAllListings(query: ListingsQuery) {
+  const queryDefaults: Partial<ListingsQuery> = {
+    active: "active",
+    order: "desc",
+    orderBy: "bids",
   };
-  const { page, pageSize, active, orderBy, orderDirection } = {
+  const { page, pageSize, active, orderBy, order, user } = {
     ...queryDefaults,
     ...query,
   };
+
+  const orderByQuery =
+    orderBy === "bids"
+      ? {
+          bids: { _count: order },
+        }
+      : {
+          [orderBy ?? "createdAt"]: order,
+        };
+
+  console.log(JSON.stringify({ orderByQuery }, null, 2));
+
   return await prisma.listing.findMany({
     skip: (page - 1) * pageSize,
     take: pageSize,
     where: {
-      expires: active ? { gt: new Date() } : undefined,
+      expires: active !== "all" ? { gt: new Date() } : undefined,
+      userId: user,
     },
-    orderBy: {
-      [orderBy]: orderDirection,
-    },
+    orderBy: [orderByQuery],
     include: {
       user: {
         select: { name: true, image: true },

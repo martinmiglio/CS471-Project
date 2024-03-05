@@ -1,0 +1,42 @@
+name: Migrate Database to match schema
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - site/prisma/migrations/**
+  workflow_dispatch:
+
+env:
+  TURSO_API_TOKEN: ${{ secrets.TURSO_API_TOKEN }}
+
+jobs:
+  migrate-db:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Cache NodeJS dependencies
+        id: cache
+        uses: actions/cache@v3
+        with:
+          path: site/node_modules
+          key: nodejs-${{ hashFiles('site/package-lock.json') }}
+      - name: Install NodeJS dependencies
+        run: cd site && npm install
+      - name: Cache Turso install
+        id: cache-turso
+        uses: actions/cache@v3
+        with:
+          key: turso
+          path: ~/.turso
+      - if: ${{ steps.cache-turso.outputs.cache-hit != 'true' }}
+        name: Install Turso CLI
+        env:
+          TURSO_INSTALL_SKIP_SIGNUP: 1
+        run: |
+          curl -sSfL https://get.tur.so/install.sh | bash;
+      - name: Apply Migration to Database
+        run: |
+          cd site;
+          ~/.turso/turso db shell ${{ secrets.TURSO_DB_NAME }} < $(npm run -s get-latest-migration)

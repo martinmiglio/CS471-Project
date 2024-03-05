@@ -30,6 +30,7 @@ export default function CountDown({ endTime }: Readonly<{ endTime: Date }>) {
   const [isExpired, setIsExpired] = useState(false);
   const [onClient, setOnClient] = useState(false);
   const timer = useRef<NodeJS.Timeout>();
+  const [isExpiring, setExpiring] = useState(false);
 
   useEffect(() => {
     timer.current = setInterval(() => {
@@ -47,6 +48,12 @@ export default function CountDown({ endTime }: Readonly<{ endTime: Date }>) {
     setOnClient(true);
   }, []);
 
+  useEffect(() => {
+    if (timeLeft.minutes < 5 && timeLeft.days === 0 && timeLeft.hours === 0) {
+      setExpiring(true);
+    }
+  }, [timeLeft]);
+
   if (!onClient) {
     return <></>;
   }
@@ -54,9 +61,9 @@ export default function CountDown({ endTime }: Readonly<{ endTime: Date }>) {
   return (
     <div>
       {isExpired ? (
-        <div>Expired</div>
+        <div className="text-destructive">Expired</div>
       ) : (
-        <div>
+        <div className={isExpiring ? "text-destructive" : ""}>
           {timeLeft.days}d:{timeLeft.hours}h:{timeLeft.minutes}m:
           {timeLeft.seconds}s
         </div>
