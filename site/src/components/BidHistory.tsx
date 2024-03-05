@@ -30,7 +30,10 @@ export default function BidHistory({
           <div key={bid.id} className="flex justify-between">
             <span className="flex">
               ${bid.price.toFixed(2)} by{" "}
-              <Link href={`/user/${bid.user.id}`} className="flex">
+              <Link
+                href={`/users/${bid.user.id}`}
+                className="flex hover:underline"
+              >
                 <Avatar className="mx-1 h-6 w-6">
                   {bid.user?.image ? (
                     <AvatarImage

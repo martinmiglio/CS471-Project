@@ -49,9 +49,9 @@ export default function CountDown({ endTime }: Readonly<{ endTime: Date }>) {
   }, []);
 
   useEffect(() => {
-    if(timeLeft.minutes < 5 && timeLeft.days === 0 && timeLeft.hours === 0 )
-      {setExpiring(true);}
-
+    if (timeLeft.minutes < 5 && timeLeft.days === 0 && timeLeft.hours === 0) {
+      setExpiring(true);
+    }
   }, [timeLeft]);
 
   if (!onClient) {
@@ -63,7 +63,7 @@ export default function CountDown({ endTime }: Readonly<{ endTime: Date }>) {
       {isExpired ? (
         <div className="text-destructive">Expired</div>
       ) : (
-        <div className = {isExpiring? "text-destructive":""}>
+        <div className={isExpiring ? "text-destructive" : ""}>
           {timeLeft.days}d:{timeLeft.hours}h:{timeLeft.minutes}m:
           {timeLeft.seconds}s
         </div>

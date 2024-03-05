@@ -5,7 +5,7 @@ export async function getListingById(id: string, includeEmail?: boolean) {
     where: { id },
     include: {
       user: {
-        select: { name: true, image: true, email: includeEmail },
+        select: { id: true, name: true, image: true, email: includeEmail },
       },
       bids: {
         include: {
@@ -32,6 +32,7 @@ export type ListingsQuery = {
   active?: (typeof ACTIVE)[number];
   orderBy?: (typeof ORDER_BY)[number];
   order?: (typeof ORDER)[number];
+  user?: string;
 };
 
 export async function getAllListings(query: ListingsQuery) {
@@ -40,7 +41,7 @@ export async function getAllListings(query: ListingsQuery) {
     order: "desc",
     orderBy: "bids",
   };
-  const { page, pageSize, active, orderBy, order } = {
+  const { page, pageSize, active, orderBy, order, user } = {
     ...queryDefaults,
     ...query,
   };
@@ -61,6 +62,7 @@ export async function getAllListings(query: ListingsQuery) {
     take: pageSize,
     where: {
       expires: active !== "all" ? { gt: new Date() } : undefined,
+      userId: user,
     },
     orderBy: [orderByQuery],
     include: {

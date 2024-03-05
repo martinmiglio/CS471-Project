@@ -19,6 +19,7 @@ export const querySchema = z.object({
   active: z.enum(ACTIVE).optional(),
   orderBy: z.enum(ORDER_BY).optional(),
   order: z.enum(ORDER).optional(),
+  user: z.string().optional(),
 });
 
 export default async function ListingsList({
@@ -32,6 +33,7 @@ export default async function ListingsList({
     active?: string;
     orderBy?: string;
     order?: string;
+    user?: string;
   };
 }>) {
   const defaultQuery = {
