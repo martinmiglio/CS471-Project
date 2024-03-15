@@ -1,6 +1,5 @@
 import authOptions from "@/app/api/auth/[...nextauth]/authOptions";
 import { placeNewBid } from "@/lib/prisma/bids";
-import { getListingById } from "@/lib/prisma/listings";
 import { getServerSession } from "next-auth";
 import { NextResponse, NextRequest } from "next/server";
 import { z } from "zod";
