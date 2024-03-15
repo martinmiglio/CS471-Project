@@ -1,9 +1,6 @@
-import { createListing } from "@/lib/prisma/listings";
-import { Listing } from "@prisma/client";
-
-const count = Number.parseInt(process.argv[2] ?? "50");
-
-console.info(`Generating ${count} demo listings`);
+import { placeNewBid } from "@/lib/prisma/bids";
+import { createListing, getListingById } from "@/lib/prisma/listings";
+import { Listing, Bid } from "@prisma/client";
 
 const emails = [
   "marmig0404@gmail.com",
@@ -32,7 +29,7 @@ const descriptions = [
 
 const prices = [0, 20, 49, 60, 29, 100];
 
-const days = [1, 2, 3, 4, 5, 6];
+const days = [2, 3, 4, 5, 6, 10];
 
 const imageURLs = [
   "https://images.unsplash.com/photo-1706071558003-dc6fef69dd53?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w1NjkyODN8MHwxfHJhbmRvbXx8fHx8fHx8fDE3MDgzOTkyODh8&ixlib=rb-4.0.3&q=80&w=1080",
@@ -47,32 +44,35 @@ const imageURLs = [
   "https://images.unsplash.com/photo-1707057538360-47db5c9a6b2a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w1NjkyODN8MHwxfHJhbmRvbXx8fHx8fHx8fDE3MDgzOTkyODh8&ixlib=rb-4.0.3&q=80&w=1080",
 ];
 
-let new_listings: Promise<Listing>[] = [];
+async function generateListings(count: number) {
+  console.info(`Generating ${count} demo listings`);
 
-for (let i = 0; i < count; i++) {
-  const n_images = Math.floor(Math.random() * (imageURLs.length - 1)) + 1;
-  const randomImages = imageURLs
-    .toSorted(() => Math.random() - 0.5)
-    .slice(0, n_images);
+  let new_listings: ReturnType<typeof createListing>[] = [];
 
-  new_listings.push(
-    createListing(
-      emails[Math.floor(Math.random() * emails.length)],
-      title_words[Math.floor(Math.random() * title_words.length)] +
-        " " +
-        title_words[Math.floor(Math.random() * title_words.length)],
-      descriptions[Math.floor(Math.random() * descriptions.length)],
-      prices[Math.floor(Math.random() * prices.length)],
-      randomImages,
-      new Date(
-        Date.now() +
-          days[Math.floor(Math.random() * days.length)] * 1000 * 60 * 60,
+  for (let i = 0; i < count; i++) {
+    const n_images = Math.floor(Math.random() * (imageURLs.length - 1)) + 1;
+    const randomImages = imageURLs
+      .toSorted(() => Math.random() - 0.5)
+      .slice(0, n_images);
+
+    new_listings.push(
+      createListing(
+        emails[Math.floor(Math.random() * emails.length)],
+        title_words[Math.floor(Math.random() * title_words.length)] +
+          " " +
+          title_words[Math.floor(Math.random() * title_words.length)],
+        descriptions[Math.floor(Math.random() * descriptions.length)],
+        prices[Math.floor(Math.random() * prices.length)],
+        randomImages,
+        new Date(
+          Date.now() +
+            days[Math.floor(Math.random() * days.length)] * 1000 * 60 * 60,
+        ),
       ),
-    ),
-  );
-}
+    );
+  }
 
-Promise.all(new_listings).then((listings) => {
+  const listings = await Promise.all(new_listings);
   const { expires: latestExpiration } = listings.reduce((a, b) => {
     return new Date(a.expires) > new Date(b.expires) ? a : b;
   });
@@ -88,4 +88,64 @@ Promise.all(new_listings).then((listings) => {
   console.info(
     `Generated ${listings.length} listings. Last listing will expire at ${latestExpiration}.`,
   );
+  return listings;
+}
+
+async function generateBids(
+  listings: Awaited<ReturnType<typeof createListing>>[],
+  bidsPerListing: number,
+) {
+  console.info(
+    `Generating ${bidsPerListing} demo bids for ${listings.length} listings`,
+  );
+
+  let bids: Bid[] = [];
+
+  for (let og_listing of listings) {
+    const listing = await getListingById(og_listing.id);
+    if (!listing) {
+      throw new Error("Listing not found");
+    }
+    // get list of users who will bid (everyone except the listing owner)
+    const bidders = emails.filter((e) => e !== listing.userId);
+
+    const bids_to_make: {email:string, price:number}[] = [];
+    for (let i = 0; i < bidsPerListing; i++) {
+      bids_to_make.push({
+        email: bidders[Math.floor(Math.random() * bidders.length)],
+        price: listing.price + Math.floor(Math.random() * 100),
+      });
+    }
+
+    // order by price ascending
+    bids_to_make.sort((a, b) => a.price - b.price);
+
+    for (let bid of bids_to_make) {
+      try {
+        const res = await placeNewBid(listing.id, bid.email, bid.price);
+        bids.push(res);
+      } catch (e: any) {
+        console.error(e);
+      }
+    }
+  }
+
+  console.table(
+    bids.map((b) => ({
+      id: b.id,
+      price: b.price,
+      user: b.userId,
+      listing: b.listingId,
+    })),
+  );
+
+  console.info(`Generated ${bids.length} bids.`);
+  return bids;
+}
+
+const count = Number.parseInt(process.argv[2] ?? "50");
+const bidsPerListing = Number.parseInt(process.argv[3] ?? "5");
+
+generateListings(count).then((listings) => {
+  generateBids(listings, bidsPerListing);
 });
