@@ -1,6 +1,8 @@
+"use client";
+
 import { AvatarImage, AvatarFallback, Avatar } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
-import { getListingById } from "@/lib/prisma/listings";
+import { type getListingById } from "@/lib/prisma/listings";
 import { UserRound } from "lucide-react";
 import Link from "next/link";
 
