@@ -64,6 +64,16 @@ User "1" -- "0..*" Bid
 Listing "1" -- "0..*" ListingImages
 
 ' controllers
+class PageController <<controller>>{
+  +getLandingPage()
+  +getAboutPage()
+  +getWatchlistPage()
+    +getListingPage()
+    +getNewListingPage()
+    +getLoginPage()
+    +getUserPage()
++getIcon()
+}
 
 class ListingsController <<controller>>{
   +createListing()
@@ -118,7 +128,7 @@ WatchlistController "1" -- "0..*" Listing : Creates/Reads/Deletes
 WatchlistController "1" -- "1" AuthenticationController : Reads
 
 S3Controller "1" -- "0..*" ListingImages : Creates/Deletes
-S3Controller "1" -- "1" AuthenticationController : Reads
+S3Controller "1" -l- "1" AuthenticationController : Reads
 
 BidController "1" -- "0..*" Bid : Creates
 BidController "1" -- "1" AuthenticationController : Reads
@@ -135,15 +145,22 @@ interface IconGenerator
 
 ' connect controllers to interfaces
 
-UserInterface <|-- AuthenticationController
-NewListingInterface <|-- ListingsController
-LoginInterface <|-- AuthenticationController
-WatchlistInterface <|-- WatchlistController
-LandingInterface <|-- AuthenticationController
-LandingInterface <|-- ListingsController
-ListingInterface <|-- ListingsController
-ListingInterface <|-- WatchlistController
-ListingInterface <|-- BidController
+UserInterface <.. AuthenticationController
+NewListingInterface <.. ListingsController
+LoginInterface <.. AuthenticationController
+WatchlistInterface <.. WatchlistController
+LandingInterface <.. AuthenticationController
+LandingInterface <.. ListingsController
+ListingInterface <.. ListingsController
+ListingInterface <.. WatchlistController
+ListingInterface <.. BidController
 
+UserInterface <.. PageController
+NewListingInterface <.. PageController
+LoginInterface <.. PageController
+WatchlistInterface <.. PageController
+AboutInterface <.. PageController
+LandingInterface <.. PageController
+IconGenerator <.. PageController
 
 @enduml
