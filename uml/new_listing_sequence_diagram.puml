@@ -1,0 +1,38 @@
+@startuml
+actor User
+
+participant "LogInInterface" as LogInInterface
+participant "Authentication Controller" as AuthenticationController
+participant "User DB" as UserDB
+participant "NewListingInterface" as NewListingInterface
+participant "Listing Controller" as ListingController
+participant "Listing DB" as ListingDB
+
+User -> LogInInterface: Log In
+activate LogInInterface
+LogInInterface -> AuthenticationController: Log In
+activate AuthenticationController
+AuthenticationController -> UserDB: Check User
+activate UserDB
+UserDB -> AuthenticationController: User Info
+deactivate UserDB
+AuthenticationController -> LogInInterface: Log In
+deactivate AuthenticationController
+
+LogInInterface -> NewListingInterface: Create New Listing
+deactivate LogInInterface
+activate NewListingInterface
+NewListingInterface -> ListingController: Create New Listing
+activate ListingController
+ListingController -> ListingDB: Create New Listing
+activate ListingDB
+ListingDB -> ListingController: New Listing Info
+deactivate ListingDB
+ListingController -> NewListingInterface: New Listing
+deactivate ListingController
+NewListingInterface -> User: New Listing
+deactivate NewListingInterface
+
+
+
+@enduml

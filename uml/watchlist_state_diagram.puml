@@ -1,0 +1,29 @@
+@startuml
+[*] --> unfilter
+
+state "Fetching unfiltered listings" as unfilter
+
+state "Displaying listings" as display
+unfilter --> display : Listings retrieved
+display --> Close
+
+state "Opening individual listing" as individual
+display --> individual : Listings displayed
+
+state "Adding to Watchlist" as shownInd
+individual --> shownInd : Item added to watchlist
+
+state "Opening watch list" as Watchlist
+shownInd --> Watchlist : Watchlist retrieved
+
+state "Removing item from watch list" as delete
+Watchlist --> delete : Item deleted
+
+delete --> Watchlist : Updated watch list retrieved
+
+Watchlist --> unfilter : Listings retrieved
+
+display --> Watchlist : Watchlist retrieved
+
+Close -> [*] : Exit
+@enduml

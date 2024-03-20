@@ -1,0 +1,56 @@
+@startuml
+actor User
+participant "LoginInterface" as LoginInterface
+participant "User DB" as UserDB
+participant "ListingsInterface" as ListingInterface
+participant "ListingsDB" as ListingDB
+participant "IndividualListingDisplay" as IndividualListingInterface
+participant "WatchlistController" as WatchlistController
+participant "WatchlistInterface" as WatchlistInterface
+
+User -> LoginInterface : User logs in
+activate LoginInterface
+LoginInterface -> UserDB : Authenticate user
+
+
+activate UserDB
+UserDB --> LoginInterface : Authentication returned
+deactivate UserDB
+
+
+LoginInterface --> ListingInterface : View listings
+deactivate LoginInterface
+
+activate ListingInterface
+ListingInterface --> ListingDB : Retrieve listings
+
+activate ListingDB
+ListingDB --> ListingInterface : Returns listings
+deactivate ListingDB
+
+
+ListingInterface --> IndividualListingInterface : Individual listing selected
+
+activate IndividualListingInterface
+IndividualListingInterface --> WatchlistController : Item added to user's watchlist
+deactivate IndividualListingInterface
+
+activate WatchlistController
+WatchlistController --> ListingDB : Update user's watchlist
+activate ListingDB
+ListingDB --> WatchlistController : Returns user's watchlist
+deactivate ListingDB
+WatchlistController --> WatchlistInterface :  Displayuser's watchlist
+deactivate WatchlistController
+
+deactivate ListingInterface
+activate WatchlistInterface
+WatchlistInterface --> ListingInterface : Return to Listings page
+deactivate WatchlistInterface
+
+activate ListingInterface
+ListingInterface --> User : User exits system
+deactivate ListingInterface
+
+
+@enduml
