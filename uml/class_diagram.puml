@@ -1,12 +1,34 @@
 @startuml ClassDiagram
 
+' models
+
+class Account {
+  +id: String
+  +userId: String
+  +provider: String
+  +refreshToken: String
+  +accessToken: String
+  +expires: DateTime
+}
+
+class Session {
+  +id: String
+  +userId: String
+  +token: String
+  +expires: DateTime
+}
+
 class User {
   +id: String
   +name: String
   +email: String
-  +emailVerified: DateTime
   +image: String
-  +userGroupIds: String[]
+  +bio: String
+  +accounts: Account[]
+  +sessions: Session[]
+  +listings: Listing[]
+  +bids: Bid[]
+  +watchedListings: Listing[]
 }
 
 class Listing {
@@ -14,10 +36,18 @@ class Listing {
   +title: String
   +description: String
   +price: Float
-  +image: String
   +userId: String
-'   +status: String
   +expires: DateTime
+  +createdAt: DateTime
+  +images: ListingImages[]
+  +bids: Bid[]
+  +watchers: User[]
+}
+
+class ListingImages {
+  +id: String
+  +listingId: String
+  +url: String
 }
 
 class Bid {
@@ -26,23 +56,26 @@ class Bid {
   +userId: String
   +listingId: String
 }
-enum UserGroupType {
-  ADMIN
+
+Account "1" -- "0..*" User
+Session "1" -- "0..*" User
+User "1" -- "0..*" Listing
+User "1" -- "0..*" Bid
+Listing "1" -- "0..*" ListingImages
+
+' controllers
+class PageController <<controller>>{
+  +getLandingPage()
+  +getAboutPage()
+  +getWatchlistPage()
+    +getListingPage()
+    +getNewListingPage()
+    +getLoginPage()
+    +getUserPage()
++getIcon()
 }
 
-class UserGroup {
-  +id: String
-  +users: User[]
-  +type: UserGroupType
-}
-
-' associations between entities
-UserGroupType "1" -- "1" UserGroup : Has
-User "1" -- "0..*" UserGroup : Belongs to
-
-
-
-class ListingsRoute {
+class ListingsController <<controller>>{
   +createListing()
   +updateListing()
   +deleteListing()
@@ -51,7 +84,13 @@ class ListingsRoute {
   +getListingsByUserId()
 }
 
-class AuthenticationRoute {
+class WatchlistController <<controller>>{
+  +addToWatchlist()
+  +removeFromWatchlist()
+  +getWatchlist()
+}
+
+class AuthenticationController <<controller>>{
   +createSession()
   +updateSession()
   +deleteSession()
@@ -62,7 +101,7 @@ class AuthenticationRoute {
   +getUserGroup()
 }
 
-class BidsRoute {
+class BidController <<controller>>{
   +createBid()
   +updateBid()
   +deleteBid()
@@ -71,51 +110,57 @@ class BidsRoute {
   +getBidsByUserId()
 }
 
+class S3Controller <<controller>>{
+  +uploadImage()
+  +deleteImage()
+}
+
 ' associations between routes and entities
-AuthenticationRoute "1" -- "0..*" User : CRUD
 
-ListingsRoute "1" -- "0..*" Listing : CRUD
-ListingsRoute "1" -- "1" AuthenticationRoute : Reads
+AuthenticationController "1" -- "0..*" User : CRUD
+AuthenticationController "1" -- "0..*" Account : CRUD
+AuthenticationController "1" -- "0..*" Session : CRUD
 
-BidsRoute "1" -- "0..*" Bid : CRUD
-BidsRoute "1" -- "1" AuthenticationRoute : Reads
+ListingsController "1" -- "0..*" Listing : Creates/Reads/Updates
+ListingsController "1" -- "1" AuthenticationController : Reads
 
+WatchlistController "1" -- "0..*" Listing : Creates/Reads/Deletes
+WatchlistController "1" -- "1" AuthenticationController : Reads
 
-interface LandingPage
-interface AboutPage
-interface LoginPage
-interface ListingPage
-interface CreateListingPage
-interface UserProfilePage
-interface AdminPage
-interface NavigationComponent
-interface ListingsFeedComponent
-interface AddBidComponent
+S3Controller "1" -- "0..*" ListingImages : Creates/Deletes
+S3Controller "1" -l- "1" AuthenticationController : Reads
+
+BidController "1" -- "0..*" Bid : Creates
+BidController "1" -- "1" AuthenticationController : Reads
 
 
-' dependency graph of pages and components
-LandingPage <.. AboutPage
-LandingPage <.. NavigationComponent
-LandingPage <.. ListingsFeedComponent
+interface UserInterface
+interface ListingInterface
+interface NewListingInterface
+interface LoginInterface
+interface WatchlistInterface
+interface AboutInterface
+interface LandingInterface
+interface IconGenerator
 
-NavigationComponent <.. LoginPage
-NavigationComponent <.. CreateListingPage
-NavigationComponent <.. UserProfilePage
-NavigationComponent <.. AdminPage
+' connect controllers to interfaces
 
-ListingsFeedComponent <.. AddBidComponent
-ListingsFeedComponent <.. ListingPage
+UserInterface <.. AuthenticationController
+NewListingInterface <.. ListingsController
+LoginInterface <.. AuthenticationController
+WatchlistInterface <.. WatchlistController
+LandingInterface <.. AuthenticationController
+LandingInterface <.. ListingsController
+ListingInterface <.. ListingsController
+ListingInterface <.. WatchlistController
+ListingInterface <.. BidController
 
-ListingPage <.. AddBidComponent
-
-' these are the routes that the pages and components are connected to
-LoginPage <.. AuthenticationRoute
-ListingPage <.. ListingsRoute
-CreateListingPage <.. ListingsRoute
-UserProfilePage <.. AuthenticationRoute
-AdminPage <.. AuthenticationRoute
-AdminPage <.. ListingsRoute
-AdminPage <.. BidsRoute
-AddBidComponent <.. BidsRoute
+UserInterface <.. PageController
+NewListingInterface <.. PageController
+LoginInterface <.. PageController
+WatchlistInterface <.. PageController
+AboutInterface <.. PageController
+LandingInterface <.. PageController
+IconGenerator <.. PageController
 
 @enduml

@@ -1,0 +1,69 @@
+@startuml StateDiagram
+
+[*] --> LandingPage
+
+state LandingPage {
+  [*] --> LoggingIn : user clicks login
+  LoggingIn --> ViewingProfile : user clicks profile
+  LoggingIn --> ViewingListings : user clicks listing
+  LoggingIn --> CreatingListing : user clicks create listing
+  LoggingIn --> ManagingSystem : user is admin
+  LoggingIn --> ViewingAbout : user clicks about
+
+  LoggingIn --> [*] : user logs out
+}
+
+state ViewingProfile {
+  [*] --> ViewingProfileDetails : page loaded
+  ViewingProfileDetails --> [*] : user navigates back
+}
+
+state ViewingListings {
+  [*] --> ViewingAvailableListings : page loaded
+  ViewingAvailableListings --> AddingBid : user adds bid
+  ViewingAvailableListings --> [*] : user navigates back
+}
+
+state CreatingListing {
+  [*] --> CreatingListingForm : page loaded
+  CreatingListingForm --> [*] : user navigates back
+  CreatingListingForm --> ErrorCreatingListing : validation error
+}
+
+state ManagingSystem {
+  [*] --> ManagingSystemDashboard : page loaded
+  ManagingSystemDashboard --> [*] : user navigates back
+}
+
+state ViewingAbout {
+  [*] --> ViewingAboutPage : page loaded
+  ViewingAboutPage --> [*] : user navigates back
+}
+
+state ErrorCreatingListing {
+  [*] --> CreatingListingForm : retry creating listing
+}
+
+state LoggingIn {
+  [*] --> VerifyingCredentials : user submits login
+  VerifyingCredentials --> LoggingIn : validation error
+  VerifyingCredentials --> ViewingProfile : successful login
+}
+
+state VerifyingCredentials {
+  [*] --> LoggingIn : cancel login
+  [*] --> ViewingProfile : successful login
+}
+
+state AddingBid {
+  [*] --> SubmittingBid : user submits bid
+  SubmittingBid --> AddingBid : validation error
+}
+
+state SubmittingBid {
+  [*] --> AddingBid : retry adding bid
+}
+
+[*] --> Navigating : user navigates
+
+@enduml
